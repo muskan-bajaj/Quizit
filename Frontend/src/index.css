@@ -91,3 +91,7 @@ body {
 .errorHandling {
   color: red;
 }
+
+.flexpage {
+  height: 100%;
+}
