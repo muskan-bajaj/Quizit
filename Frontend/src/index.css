@@ -87,3 +87,7 @@ body {
 #root {
   height: 100%;
 }
+
+.errorHandling {
+  color: red;
+}
