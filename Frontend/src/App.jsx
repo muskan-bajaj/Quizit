@@ -5,7 +5,7 @@ import "./App.css";
 
 const Login = React.lazy(() => import("./components/Login"));
 const Profile = React.lazy(() => import("./components/Profile"));
-const Test = React.lazy(() => import("./components/Test"));
+const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
 
 function App() {
@@ -33,7 +33,7 @@ function App() {
             path="/assessment"
             element={
               <Suspense>
-                <Test />
+                <Assessment />
               </Suspense>
             }
           />

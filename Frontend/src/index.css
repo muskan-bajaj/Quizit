@@ -94,4 +94,5 @@ body {
 
 .flexpage {
   height: 100%;
+  display: flex;
 }

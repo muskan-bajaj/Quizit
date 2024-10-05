@@ -1,0 +1,37 @@
+.assessmentCard {
+  background-color: #393e46;
+  padding: 12px;
+  border-radius: 10px;
+  width: 30%;
+}
+
+.name {
+  font-size: 20px;
+  font-weight: bolder;
+  padding-bottom: 5px;
+}
+
+.questions,
+.date,
+.time,
+.course,
+.semester {
+  color: #aeaeb2;
+  font-size: 15px;
+}
+
+.studentButton {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+}
+
+.studentButton button {
+  background-color: #00adb5;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  padding: 5px 30px;
+}
