@@ -1,12 +1,11 @@
-// import React from "react";
+import { useState } from "react";
 
 import SideBar from "./SideBar";
 import arrow from "../assets/arrow.svg";
 import arrowUp from "../assets/arrowUp.svg";
 
 import css from "../css/Assessment.module.css";
-import { useState } from "react";
-import AssessmentCard from "./assessment/AssessmentCard";
+import AssessmentCard from "./cards/AssessmentCard";
 
 export default function Assessment() {
   const [upcomingView, setUpcomingView] = useState(true);
