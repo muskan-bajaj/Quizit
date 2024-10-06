@@ -1,8 +1,10 @@
 // import React from "react";
 
 import { useState } from "react";
-import css from "../css/Login.module.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+import css from "../css/Login.module.css";
 
 export default function Login() {
   const redirect = useNavigate();
@@ -10,14 +12,24 @@ export default function Login() {
   const [login, setLogin] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError("");
     if (login.email === "" || login.password === "") {
       setError("Fill all the required fields");
       return;
     }
-    console.log(login);
-    redirect("/profile");
+    try {
+      // const response =
+      await axios.post("http://localhost:3000/auth/login", {
+        username: login.email,
+        password: login.password,
+      });
+      // console.log(response);
+      setError("");
+      redirect("/profile");
+    } catch (err) {
+      setError(err.response.data.error);
+    }
   };
 
   return (
@@ -35,7 +47,7 @@ export default function Login() {
         />
         <input
           className={css.input}
-          type="text"
+          type="password"
           placeholder="Enter Password*"
           value={login.password}
           onChange={(e) => {
@@ -48,6 +60,16 @@ export default function Login() {
           <button className={css.login} onClick={handleLogin}>
             Login
           </button>
+        </div>
+        <div className={css.register}>
+          New User?{" "}
+          <span
+            onClick={() => {
+              redirect("/signup");
+            }}
+          >
+            Register Now.
+          </span>
         </div>
       </div>
     </div>

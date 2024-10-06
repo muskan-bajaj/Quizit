@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 const Login = React.lazy(() => import("./components/Login"));
+const Register = React.lazy(() => import("./components/Register"));
 const Profile = React.lazy(() => import("./components/Profile"));
 const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
@@ -18,6 +19,14 @@ function App() {
             element={
               <Suspense>
                 <Login />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <Suspense>
+                <Register />
               </Suspense>
             }
           />

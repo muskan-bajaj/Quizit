@@ -1,4 +1,4 @@
-.loginBox {
+.registerBox {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -44,7 +44,7 @@
   justify-content: center;
 }
 
-.login {
+.register {
   width: min-content;
   padding: 6px 30px;
   background-color: #00adb5;
@@ -56,14 +56,14 @@
   cursor: pointer;
 }
 
-.register {
+.login {
   font-size: 15px;
   text-align: center;
 }
 
-.register span {
+.login span {
   cursor: pointer;
 }
-.register span:hover {
+.login span:hover {
   text-decoration: underline;
 }

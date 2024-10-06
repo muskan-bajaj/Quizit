@@ -33,7 +33,7 @@ export async function login(req: Request, res: Response) {
       maxAge: 1000 * 60 * 60 * 24 * 5,
     }); // expires in 5 days
 
-    res.json({
+    res.status(200).json({
       user: {
         name: user.name,
         email: user.username,
@@ -55,8 +55,13 @@ export async function register(req: Request, res: Response) {
   const data: type.register = req.body;
 
   var email_domain = data.email.split("@")[1];
-  var allowed_domains:Array<String> = config.configRegister? config.getConfig().allowed_email : [];
-  if(allowed_domains && !allowed_domains.some((domain)=>domain === email_domain)){
+  var allowed_domains: Array<String> = config.configRegister
+    ? config.getConfig().allowed_email
+    : [];
+  if (
+    allowed_domains &&
+    !allowed_domains.some((domain) => domain === email_domain)
+  ) {
     res.status(400).json({ error: "Email domain not allowed" });
     return;
   }
@@ -82,7 +87,7 @@ export async function register(req: Request, res: Response) {
     },
   });
 
-  res.json({uid: user.uid});
+  res.json({ uid: user.uid });
 }
 
 export async function validate(req: Request, res: Response) {
