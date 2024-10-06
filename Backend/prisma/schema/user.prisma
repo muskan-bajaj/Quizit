@@ -1,0 +1,21 @@
+enum authProvider{
+    Email
+    Google
+}
+
+enum role{
+    Admin
+    Student
+    Teacher
+}
+model user {
+    uid  Int @id @default(autoincrement())
+    name String
+    username String? @unique
+    password String?
+    salt String?
+    rollno Int?
+    provider authProvider @default(Email)
+    providerToken String?
+    role role @default(Student)
+}

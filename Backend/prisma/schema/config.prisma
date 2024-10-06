@@ -1,0 +1,5 @@
+model config{
+    configName String @id
+    configValue Json @default("{}")
+    description String?
+}
