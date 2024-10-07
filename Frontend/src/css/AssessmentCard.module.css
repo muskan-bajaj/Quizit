@@ -20,13 +20,13 @@
   font-size: 15px;
 }
 
-.studentButton {
+.buttons {
   display: flex;
   justify-content: flex-end;
   padding-top: 10px;
 }
 
-.studentButton button {
+.buttons button {
   background-color: #00adb5;
   border: none;
   border-radius: 10px;
@@ -34,4 +34,5 @@
   font-weight: bold;
   color: white;
   padding: 5px 30px;
+  cursor: pointer;
 }

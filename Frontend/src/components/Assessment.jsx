@@ -48,6 +48,44 @@ export default function Assessment() {
       semester: "4",
     },
   ]);
+  const [closedData, setClosedData] = useState([
+    {
+      name: "DSA Quiz 1",
+      questions: "10",
+      date: "28 Aug 2024",
+      time: "12:00 AM",
+      duration: "45 minutes",
+      course: "DSA - CS2001",
+      semester: "4",
+    },
+    {
+      name: "DSA Quiz 1",
+      questions: "10",
+      date: "28 Aug 2024",
+      time: "12:00 AM",
+      duration: "45 minutes",
+      course: "DSA - CS2001",
+      semester: "4",
+    },
+    {
+      name: "DSA Quiz 1",
+      questions: "10",
+      date: "28 Aug 2024",
+      time: "12:00 AM",
+      duration: "45 minutes",
+      course: "DSA - CS2001",
+      semester: "4",
+    },
+    {
+      name: "DSA Quiz 1",
+      questions: "10",
+      date: "28 Aug 2024",
+      time: "12:00 AM",
+      duration: "45 minutes",
+      course: "DSA - CS2001",
+      semester: "4",
+    },
+  ]);
 
   return (
     <div className="flexpage">
@@ -72,7 +110,7 @@ export default function Assessment() {
           {upcomingView && (
             <div className={css.sectionDetails}>
               {upcomingData.map((data, key) => {
-                return <AssessmentCard key={key} data={data} />;
+                return <AssessmentCard key={key} data={data} closed={false} />;
               })}
             </div>
           )}
@@ -94,8 +132,8 @@ export default function Assessment() {
           </div>
           {closedView && (
             <div className={css.sectionDetails}>
-              {upcomingData.map((data, key) => {
-                return <AssessmentCard key={key} data={data} />;
+              {closedData.map((data, key) => {
+                return <AssessmentCard key={key} data={data} closed={true} />;
               })}
             </div>
           )}
