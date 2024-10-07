@@ -39,6 +39,7 @@ export async function login(req: Request, res: Response) {
         email: user.username,
         role: user.role,
         provider: user.provider,
+        rollno: user.rollno,
       },
     });
     return;
@@ -91,5 +92,21 @@ export async function register(req: Request, res: Response) {
 }
 
 export async function validate(req: Request, res: Response) {
-  res.sendStatus(200);
+  if (!req.body.user) {
+    res.status(401);
+  }
+  var user = await prisma.user.findUnique({ where: { uid: req.body.user } });
+  if (user) {
+    res.json({
+      user: {
+        name: user.name,
+        email: user.username,
+        role: user.role,
+        provider: user.provider,
+        rollno: user.rollno,
+      },
+    });
+    return 
+  }
+  res.status(401).json({ error: "Invalid User" });
 }
