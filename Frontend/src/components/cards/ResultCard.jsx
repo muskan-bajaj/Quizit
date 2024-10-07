@@ -2,7 +2,7 @@
 
 import css from "../../css/ResultCard.module.css";
 
-export default function ResultCard({ data }) {
+export default function ResultCard({ data, declared }) {
   return (
     <div className={css.resultCard}>
       <div className={css.name}>{data.name}</div>
@@ -14,10 +14,16 @@ export default function ResultCard({ data }) {
       <div className={css.course}>{data.course}</div>
       <div className={css.semester}>{data.semester}th Semester</div>
       <div className={css.studentButton}>
-        <button className={css.score}>
-          {data.score}/{data.total}
-        </button>
-        <button className={css.report}>Show Report</button>
+        {declared ? (
+          <>
+            <button className={css.score}>
+              {data.score}/{data.total}
+            </button>
+            <button className={css.report}>Show Report</button>
+          </>
+        ) : (
+          <button className={css.pending}>Pending</button>
+        )}
       </div>
     </div>
   );

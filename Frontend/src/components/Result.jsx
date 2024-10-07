@@ -56,6 +56,52 @@ export default function Result() {
       total: "10",
     },
   ]);
+  const [undeclaredData, setUndeclaredData] = useState([
+    {
+      name: "DSA Quiz 1",
+      questions: "10",
+      date: "28 Aug 2024",
+      time: "12:00 AM",
+      duration: "45 minutes",
+      course: "DSA - CS2001",
+      semester: "4",
+      score: "8",
+      total: "10",
+    },
+    {
+      name: "DSA Quiz 1",
+      questions: "10",
+      date: "28 Aug 2024",
+      time: "12:00 AM",
+      duration: "45 minutes",
+      course: "DSA - CS2001",
+      semester: "4",
+      score: "8",
+      total: "10",
+    },
+    {
+      name: "DSA Quiz 1",
+      questions: "10",
+      date: "28 Aug 2024",
+      time: "12:00 AM",
+      duration: "45 minutes",
+      course: "DSA - CS2001",
+      semester: "4",
+      score: "8",
+      total: "10",
+    },
+    {
+      name: "DSA Quiz 1",
+      questions: "10",
+      date: "28 Aug 2024",
+      time: "12:00 AM",
+      duration: "45 minutes",
+      course: "DSA - CS2001",
+      semester: "4",
+      score: "8",
+      total: "10",
+    },
+  ]);
 
   return (
     <div className="flexpage">
@@ -80,7 +126,7 @@ export default function Result() {
           {declaredView && (
             <div className={css.sectionDetails}>
               {declaredData.map((data, key) => {
-                return <ResultCard key={key} data={data} />;
+                return <ResultCard key={key} data={data} declared={true} />;
               })}
             </div>
           )}
@@ -102,8 +148,8 @@ export default function Result() {
           </div>
           {pendingView && (
             <div className={css.sectionDetails}>
-              {declaredData.map((data, key) => {
-                return <ResultCard key={key} data={data} />;
+              {undeclaredData.map((data, key) => {
+                return <ResultCard key={key} data={data} declared={false} />;
               })}
             </div>
           )}
