@@ -10,6 +10,7 @@ const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
 
 function App() {
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
   return (
     <>
       <BrowserRouter>
@@ -30,30 +31,36 @@ function App() {
               </Suspense>
             }
           />
-          <Route
-            path="/profile"
-            element={
-              <Suspense>
-                <Profile />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/assessment"
-            element={
-              <Suspense>
-                <Assessment />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/results"
-            element={
-              <Suspense>
-                <Result />
-              </Suspense>
-            }
-          />
+          {isLoggedIn && (
+            <Route
+              path="/profile"
+              element={
+                <Suspense>
+                  <Profile />
+                </Suspense>
+              }
+            />
+          )}
+          {isLoggedIn && (
+            <Route
+              path="/assessment"
+              element={
+                <Suspense>
+                  <Assessment />
+                </Suspense>
+              }
+            />
+          )}
+          {isLoggedIn && (
+            <Route
+              path="/results"
+              element={
+                <Suspense>
+                  <Result />
+                </Suspense>
+              }
+            />
+          )}
         </Routes>
       </BrowserRouter>
     </>

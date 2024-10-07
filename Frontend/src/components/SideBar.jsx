@@ -8,9 +8,12 @@ import logout from "../assets/logoutIcon.svg";
 
 import css from "../css/SideBar.module.css";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "../store/AuthContext";
 
 export default function SideBar() {
   const redirect = useNavigate();
+  const authCtx = useContext(AuthContext);
 
   return (
     <div className={css.sidebar}>
@@ -59,6 +62,7 @@ export default function SideBar() {
       <div
         className={css.navItems}
         onClick={() => {
+          authCtx.logout();
           redirect("/");
         }}
       >

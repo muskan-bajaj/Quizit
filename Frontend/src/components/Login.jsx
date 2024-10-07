@@ -1,12 +1,15 @@
 // import React from "react";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
+import AuthContext from "../store/AuthContext";
 
 import css from "../css/Login.module.css";
 
 export default function Login() {
+  const authCtx = useContext(AuthContext);
   const redirect = useNavigate();
 
   const [login, setLogin] = useState({ email: "", password: "" });
@@ -19,12 +22,16 @@ export default function Login() {
       return;
     }
     try {
-      // const response =
-      await axios.post("http://localhost:3000/auth/login", {
+      const response = await axios.post("http://localhost:3000/auth/login", {
         username: login.email,
         password: login.password,
       });
-      // console.log(response);
+      authCtx.login(
+        response.data.user.name,
+        response.data.user.email,
+        response.data.user.rollno,
+        response.data.user.role
+      );
       setError("");
       redirect("/profile");
     } catch (err) {
