@@ -33,3 +33,14 @@
   flex-wrap: wrap;
   gap: 10px;
 }
+
+.addNew {
+  background-color: #393e46;
+  padding: 12px;
+  border-radius: 10px;
+  width: 12%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}

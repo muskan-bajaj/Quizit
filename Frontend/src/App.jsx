@@ -1,5 +1,7 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useContext } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import AuthContext from "./store/AuthContext";
 
 import "./App.css";
 
@@ -8,9 +10,11 @@ const Register = React.lazy(() => import("./components/Register"));
 const Profile = React.lazy(() => import("./components/Profile"));
 const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
+const CreateTest = React.lazy(() => import("./components/CreateTest"));
 
 function App() {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const authCtx = useContext(AuthContext);
   return (
     <>
       <BrowserRouter>
@@ -57,6 +61,16 @@ function App() {
               element={
                 <Suspense>
                   <Result />
+                </Suspense>
+              }
+            />
+          )}
+          {isLoggedIn && authCtx.user.access == "Teacher" && (
+            <Route
+              path="/createTest"
+              element={
+                <Suspense>
+                  <CreateTest />
                 </Suspense>
               }
             />
