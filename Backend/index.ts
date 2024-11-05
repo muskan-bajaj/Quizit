@@ -8,6 +8,10 @@ import * as routes from "./routes";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use((req, res, next) => {
+  req.locals = {};
+  next();
+}); //initialize req.locals
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -24,6 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/auth", routes.userRoutes);
+app.use("/test", routes.testRoute);
 
 app.use("*/*", (req, res) => {
   res.status(404).send("404 Not Found");
