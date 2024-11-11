@@ -3,7 +3,10 @@ import SideBar from "./SideBar";
 import Settings from "./createTest/Settings";
 
 export default function CreateTest() {
-  const [viewSettings, setViewSettings] = useState(true);
+  const [selected, setSelected] = useState(0);
+  // const [states, setStates] = useState();
+  // const [viewSettings, setViewSettings] = useState(true);
+  const [totalQuestions, setTotalQuestions] = useState(2);
   const [settingsData, setSettingsData] = useState({
     violation: "",
     totalQuestions: "",
@@ -21,8 +24,14 @@ export default function CreateTest() {
 
   return (
     <div className="flexpage">
-      <SideBar settings={viewSettings} setSettings={setViewSettings} />
-      {viewSettings ? (
+      <SideBar
+        data={settingsData}
+        selected={selected}
+        setSelected={setSelected}
+        totalQuestions={totalQuestions}
+        setTotalQuestions={setTotalQuestions}
+      />
+      {selected == 0 ? (
         <Settings data={settingsData} setData={setSettingsData} />
       ) : (
         <></>
