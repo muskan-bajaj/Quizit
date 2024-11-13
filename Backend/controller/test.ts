@@ -2,7 +2,7 @@ import e, { Request, Response } from "express";
 import * as types from "./interface/test";
 import * as schema from "../drizzle/schema";
 import { getDbInstance } from "../drizzle/db";
-import { inArray, and, eq, sql } from "drizzle-orm";
+import { inArray, and, eq, sql, lt, notExists, or, SQL } from "drizzle-orm";
 import { report } from "process";
 import moment from "moment";
 
@@ -136,38 +136,39 @@ export async function getTest(req: Request, res: Response) {
         .select()
         .from(schema.test)
         .where(eq(schema.test.createdBy, req.locals.user.uid));
+
       res.json(tests);
-    } else {
-      const tests = await db.query.testManager.findMany({
-        columns: {},
-        where: eq(schema.testManager.uid, req.locals.user.uid),
-        with: {
-          test: {
-            with: {
-              subject: true,
-              user: {
-                columns: {
-                  name: true,
-                  username: true,
-                },
+      return;
+    }
+    const tests = await db.query.testManager.findMany({
+      columns: {},
+      where: eq(schema.testManager.uid, req.locals.user.uid),
+      with: {
+        test: {
+          with: {
+            subject: true,
+            user: {
+              columns: {
+                name: true,
+                username: true,
               },
             },
           },
         },
-      });
+      },
+    });
 
-      var testsFinal = tests.map((test) => test.test);
-      var testsRes = testsFinal.map((test) => {
-        return {
-          ...test,
-          createdBy: test.user,
-          subjectId: undefined,
-          user: undefined,
-        };
-      });
+    var testsFinal = tests.map((test) => test.test);
+    var testsRes = testsFinal.map((test) => {
+      return {
+        ...test,
+        createdBy: test.user,
+        subjectId: undefined,
+        user: undefined,
+      };
+    });
 
-      res.json(testsRes);
-    }
+    res.json(testsRes);
   } catch (error: any) {
     console.log(error);
     res.status(error.code).json(error.message);
@@ -184,7 +185,7 @@ export async function getTestDetails(req: Request, res: Response) {
     }
 
     if (req.locals.user.role === "Teacher") {
-      const tests = await db.query.test.findMany({
+      const test = await db.query.test.findFirst({
         where: and(
           eq(schema.test.createdBy, req.locals.user.uid),
           eq(schema.test.tid, Number(req.query.tid))
@@ -211,59 +212,75 @@ export async function getTestDetails(req: Request, res: Response) {
           },
         },
       });
-      res.json(tests);
-    } else {
-      const tests = await db.query.testManager.findMany({
-        columns: {},
-        where: and(
-          eq(schema.testManager.uid, req.locals.user.uid),
-          eq(schema.testManager.tid, Number(req.query.tid))
-        ),
-        with: {
-          test: {
-            with: {
-              questionBanks: {
-                columns: {
-                  qid: true,
-                  question: true,
-                  answer: true,
-                  type: true,
-                  marksAwarded: true,
-                  order: true,
-                },
-                with: {
-                  options: {
-                    columns: {
-                      option: true,
-                      correct: true,
-                      oid: true,
-                    },
+      res.json(test);
+      return;
+    }
+    const testManager = await db.query.testManager.findFirst({
+      where: and(
+        eq(schema.testManager.uid, req.locals.user.uid),
+        eq(schema.testManager.tid, Number(req.query.tid))
+      ),
+      with: {
+        test: {
+          with: {
+            questionBanks: {
+              columns: {
+                qid: true,
+                question: true,
+                answer: true,
+                type: true,
+                marksAwarded: true,
+                order: true,
+              },
+              with: {
+                options: {
+                  columns: {
+                    option: true,
+                    correct: true,
+                    oid: true,
                   },
                 },
               },
+              where: (qb): SQL | undefined =>
+                or(
+                  notExists(
+                    db
+                      .select()
+                      .from(schema.submission)
+                      .where(
+                        and(
+                          eq(schema.submission.qid, qb.qid),
+                          eq(schema.submission.tmid, schema.testManager.tmid)
+                        )
+                      )
+                  )
+                ),
             },
           },
         },
-      });
-      if (tests.length === 0) {
-        throw { code: 404, message: "Test not found" };
-      }
+      },
+    });
 
-      const shuffled = tests.map((test) => {
-        const shuffledQuestions = test.test.questionBanks.sort(
-          () => 0.5 - Math.random()
-        )
-        .slice(0, test.test.questionCount)
-
-        return {
-          ...test.test,
-          questionBanks: shuffledQuestions,
-        };
-      });
-      res.json(shuffled);
+    if (!testManager) {
+      throw { code: 404, message: "Test not found" };
     }
+
+    const submissions = await db.query.submission.findMany({
+      where: eq(schema.submission.tmid, testManager.tmid),
+    });
+
+    const shuffled = testManager.test.questionBanks
+      .sort(() => 0.5 - Math.random())
+      .slice(0, testManager.test.questionCount - submissions.length);
+
+    res.json({
+      ...testManager.test,
+      questionBanks: shuffled,
+    });
   } catch (error: any) {
     console.log(error);
-    res.status(error.code).json(error.message);
+    res.status(500).json(error.message);
   }
 }
+
+export async function startTest(req: Request, res: Response) {}

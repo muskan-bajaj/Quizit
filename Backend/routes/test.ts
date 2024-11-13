@@ -16,7 +16,7 @@ router.post(
 );
 
 router.get("/", controller.test.getTest);
-
 router.get("/details", controller.test.getTestDetails);
+router.get("/startTest", controller.test.startTest);
 
 export default router;
