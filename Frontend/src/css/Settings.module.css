@@ -1,0 +1,38 @@
+.settingsScreen {
+  width: 100%;
+  padding: 55px 35px;
+  overflow-y: scroll;
+}
+
+.heading {
+  font-size: 35px;
+  padding-bottom: 30px;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 25px;
+}
+
+.inputs input,
+.inputs select,
+.inputs textarea {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  background-color: #393e46;
+  color: white;
+}
+
+.duration {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.duration input {
+  width: 45%;
+}

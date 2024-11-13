@@ -38,7 +38,7 @@ export async function login(req: Request, res: Response) {
       maxAge: 1000 * 60 * 60 * 24 * 5,
     }); // expires in 5 days
 
-    res.json({
+    res.status(200).json({
       user: {
         name: user.name,
         email: user.username,

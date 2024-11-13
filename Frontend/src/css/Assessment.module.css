@@ -1,0 +1,46 @@
+.assessmentScreen {
+  width: 100%;
+  padding: 55px 35px;
+  overflow-y: scroll;
+}
+
+.heading {
+  font-size: 35px;
+}
+
+.sectionHeading {
+  padding-top: 50px;
+  padding-bottom: 18px;
+  display: flex;
+}
+
+.text {
+  color: #c7c7cc;
+  font-size: 20px;
+}
+
+.line {
+  padding: 0px 18px;
+  width: 100%;
+}
+
+.dropdownArrow {
+  cursor: pointer;
+}
+
+.sectionDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.addNew {
+  background-color: #393e46;
+  padding: 12px;
+  border-radius: 10px;
+  width: 12%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
