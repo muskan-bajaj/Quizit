@@ -15,26 +15,15 @@ import publishIcon from "../assets/publishIcon.svg";
 import css from "../css/SideBar.module.css";
 
 export default function SideBar({
-  data,
   selected,
   setSelected,
   totalQuestions,
   setTotalQuestions,
+  questionData,
+  setQuestionData,
 }) {
   const redirect = useNavigate();
   const authCtx = useContext(AuthContext);
-
-  // const handleClick = (key) => {
-  //   setStates((prevStates) => {
-  //     if (prevStates[key]) return prevStates;
-  //     // Create a new state object with the clicked key set to true and others to false
-  //     return Object.keys(prevStates).reduce((acc, stateKey) => {
-  //       acc[stateKey] = stateKey === key; // set the clicked key to true, others to false
-  //       return acc;
-  //     }, {});
-  //   });
-  // };
-
   return (
     <>
       <div className={css.sidebar}>
@@ -130,6 +119,16 @@ export default function SideBar({
             style={{ backgroundColor: "#4b515b" }}
             onClick={() => {
               setTotalQuestions(totalQuestions + 1);
+              setQuestionData([
+                ...questionData,
+                {
+                  marks: "",
+                  question: "",
+                  questionType: "subjective",
+                  answer: "",
+                  options: [],
+                },
+              ]);
             }}
           >
             <img src={plusBlack} />
@@ -139,7 +138,6 @@ export default function SideBar({
             style={{ backgroundColor: "#03C988" }}
             onClick={() => {
               confirm("Do you want to publish the test?");
-              console.log(data);
               redirect("/assessment");
             }}
           >

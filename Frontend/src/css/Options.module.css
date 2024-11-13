@@ -1,0 +1,42 @@
+/* {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 25px;
+} */
+
+input,
+select,
+textarea {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  background-color: #393e46;
+  color: white;
+}
+
+.options {
+  padding-top: 25px;
+  display: flex;
+}
+
+.optionValue {
+  width: 75%;
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}
+
+.optionOptions {
+  width: 25%;
+  background-color: #393e46;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+.optionOptions img {
+  cursor: pointer;
+}

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SideBar from "./SideBar";
 import Settings from "./createTest/Settings";
+import AddQuestion from "./createTest/AddQuestion";
 
 export default function CreateTest() {
   const [selected, setSelected] = useState(0);
@@ -17,24 +18,34 @@ export default function CreateTest() {
     rollno: "",
     instructions: "",
   });
-
-  useEffect(() => {
-    console.log(settingsData);
-  }, [settingsData]);
+  const [questionData, setQuestionData] = useState([
+    {
+      marks: "",
+      question: "",
+      questionType: "subjective",
+      answer: [],
+      options: [],
+    },
+  ]);
 
   return (
     <div className="flexpage">
       <SideBar
-        data={settingsData}
         selected={selected}
         setSelected={setSelected}
         totalQuestions={totalQuestions}
         setTotalQuestions={setTotalQuestions}
+        questionData={questionData}
+        setQuestionData={setQuestionData}
       />
       {selected == 0 ? (
-        <Settings data={settingsData} setData={setSettingsData} />
+        <Settings data={settingsData} setData={setSettingsData} s />
       ) : (
-        <></>
+        <AddQuestion
+          questionNo={selected}
+          data={questionData}
+          setData={setQuestionData}
+        />
       )}
     </div>
   );
