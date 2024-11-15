@@ -3,20 +3,35 @@ import css from "../../css/Options.module.css";
 import deleteIcon from "../../assets/deleteIcon.svg";
 
 export default function Options({
-  checked,
-  setChecked,
-  correctOption,
-  setCorrectOption,
   options,
   setOptions,
   data,
   setData,
-  //   value,
   index,
+  checked,
+  setChecked,
 }) {
   const handleInputChange = (value) => {
     data.options[index] = value;
     setData({ ...data, options: data.options });
+  };
+
+  const handleBooleanChange = (value) => {
+    const newChecked = [...checked];
+    newChecked[index] = value;
+
+    if (newChecked[index]) {
+      setData({
+        ...data,
+        answer: [...data.answer, data.options[index]],
+      });
+    } else {
+      setData({
+        ...data,
+        answer: data.answer.filter((item) => item !== data.options[index]),
+      });
+    }
+    setChecked(newChecked);
   };
 
   return (
@@ -26,9 +41,8 @@ export default function Options({
         id="answer"
         className={css.optionValue}
         placeholder="Enter Option"
-        // value={correctOption}
+        value={data.options[index]}
         onChange={(e) => {
-          setCorrectOption(e.target.value);
           handleInputChange(e.target.value);
         }}
       />
@@ -36,9 +50,9 @@ export default function Options({
         <span>
           <input
             type="checkbox"
-            value={checked}
+            checked={checked[index]}
             onChange={(e) => {
-              setChecked(e.target.value);
+              handleBooleanChange(e.target.checked);
             }}
           />{" "}
           Mark As Answer
@@ -48,10 +62,13 @@ export default function Options({
             src={deleteIcon}
             height={20}
             onClick={() => {
+              const optionValue = data.options[index];
               setData({
                 ...data,
                 options: data.options.filter((_, i) => i !== index),
+                answer: data.answer.filter((item) => item !== optionValue),
               });
+              setChecked(checked.filter((_, i) => i !== index));
               setOptions(options - 1);
             }}
           />

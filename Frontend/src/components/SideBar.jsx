@@ -21,6 +21,8 @@ export default function SideBar({
   setTotalQuestions,
   questionData,
   setQuestionData,
+  settingsData,
+  setSettingsData,
 }) {
   const redirect = useNavigate();
   const authCtx = useContext(AuthContext);
@@ -137,6 +139,8 @@ export default function SideBar({
             className={css.navItems}
             style={{ backgroundColor: "#03C988" }}
             onClick={() => {
+              console.log(questionData);
+              console.log(settingsData);
               confirm("Do you want to publish the test?");
               redirect("/assessment");
             }}

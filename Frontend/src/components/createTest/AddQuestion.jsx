@@ -8,8 +8,7 @@ import css from "../../css/AddQuestion.module.css";
 
 export default function AddQuestion({ questionNo, data, setData }) {
   const [currentData, setCurrentData] = useState(data[questionNo - 1]);
-  const [checked, setChecked] = useState(false);
-  const [correctOption, setCorrectOption] = useState("");
+  const [checked, setChecked] = useState([false]);
   const [options, setOptions] = useState(1);
 
   useEffect(() => {
@@ -21,21 +20,8 @@ export default function AddQuestion({ questionNo, data, setData }) {
   }, [currentData]);
 
   useEffect(() => {
-    if (checked) {
-      setCurrentData({
-        ...currentData,
-        answer: [...currentData.answer, correctOption],
-      });
-    } else {
-      // var index = currentData.answer.indexOf(correctOption);
-      setCurrentData({
-        ...currentData,
-        answer: currentData.answer.filter(function (item) {
-          return item !== correctOption;
-        }),
-      });
-    }
-  }, [checked]);
+    console.log(data);
+  });
 
   return (
     <div className={css.addQuestionScreen}>
@@ -103,13 +89,10 @@ export default function AddQuestion({ questionNo, data, setData }) {
             (key, index) => {
               return (
                 <Options
-                  value={currentData.options[index]}
                   index={index}
                   key={key}
                   checked={checked}
                   setChecked={setChecked}
-                  correctOption={correctOption}
-                  setCorrectOption={setCorrectOption}
                   options={options}
                   setOptions={setOptions}
                   data={currentData}
@@ -125,6 +108,7 @@ export default function AddQuestion({ questionNo, data, setData }) {
               height={35}
               onClick={() => {
                 setOptions(options + 1);
+                setChecked([...checked, false]);
               }}
             />
           </div>

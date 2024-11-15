@@ -5,8 +5,6 @@ import AddQuestion from "./createTest/AddQuestion";
 
 export default function CreateTest() {
   const [selected, setSelected] = useState(0);
-  // const [states, setStates] = useState();
-  // const [viewSettings, setViewSettings] = useState(true);
   const [totalQuestions, setTotalQuestions] = useState(2);
   const [settingsData, setSettingsData] = useState({
     violation: "",
@@ -37,6 +35,8 @@ export default function CreateTest() {
         setTotalQuestions={setTotalQuestions}
         questionData={questionData}
         setQuestionData={setQuestionData}
+        settingsData={settingsData}
+        setSettingsData={setSettingsData}
       />
       {selected == 0 ? (
         <Settings data={settingsData} setData={setSettingsData} s />
