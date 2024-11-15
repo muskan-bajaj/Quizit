@@ -65,11 +65,11 @@ export default function AddQuestion({ questionNo, data, setData }) {
             });
           }}
         >
-          <option value="subjective">Subjective</option>
-          <option value="mcq">Multiple Choice Question (MCQ)</option>
+          <option value="long">Subjective</option>
+          <option value="choice">Multiple Choice Question (MCQ)</option>
         </select>
       </div>
-      {currentData.questionType == "subjective" ? (
+      {currentData.questionType == "long" ? (
         <div className={css.inputs}>
           <label htmlFor="answers">Enter Correct Answer</label>
           <textarea

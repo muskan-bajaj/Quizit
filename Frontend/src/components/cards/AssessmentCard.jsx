@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "../../store/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 import css from "../../css/AssessmentCard.module.css";
 
 export default function AssessmentCard({ data, closed }) {
   const authCtx = useContext(AuthContext);
+  const redirect = useNavigate();
   const [difference, setDifference] = useState("");
 
   const getDifference = () => {
@@ -55,7 +57,13 @@ export default function AssessmentCard({ data, closed }) {
       <div className={css.buttons}>
         {!closed ? (
           authCtx.user.access == "Student" ? (
-            <button>Start</button>
+            <button
+              onClick={() => {
+                redirect(`/test/${data.tid}`);
+              }}
+            >
+              Start
+            </button>
           ) : (
             <button>Edit</button>
           )

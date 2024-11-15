@@ -126,7 +126,7 @@ export default function SideBar({
                 {
                   marks: "",
                   question: "",
-                  questionType: "subjective",
+                  questionType: "long",
                   answer: "",
                   options: [],
                 },

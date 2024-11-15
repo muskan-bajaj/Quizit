@@ -20,7 +20,7 @@ export default function CreateTest() {
     {
       marks: "",
       question: "",
-      questionType: "subjective",
+      questionType: "long",
       answer: [],
       options: [],
     },

@@ -72,9 +72,7 @@ export default function Assessment() {
 
   const getTestHandler = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/test", {
-        withCredentials: true,
-      });
+      const response = await axios.get("http://localhost:3000/test");
       console.log(response.data);
       setUpcomingData(response.data);
     } catch (e) {
