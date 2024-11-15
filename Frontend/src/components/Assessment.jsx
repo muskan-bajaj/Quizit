@@ -18,89 +18,65 @@ export default function Assessment() {
 
   const [upcomingView, setUpcomingView] = useState(true);
   const [closedView, setClosedView] = useState(true);
-  const [upcomingData, setUpcomingData] = useState([
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-  ]);
+  const [upcomingData, setUpcomingData] = useState([]);
   const [closedData, setClosedData] = useState([
     {
       name: "DSA Quiz 1",
-      questions: "10",
+      questionCount: "10",
       date: "28 Aug 2024",
       time: "12:00 AM",
       duration: "45 minutes",
-      course: "DSA - CS2001",
+      subject: {
+        name: "DSA",
+        subjectId: "CS - 2011",
+      },
       semester: "4",
     },
     {
       name: "DSA Quiz 1",
-      questions: "10",
+      questionCount: "10",
       date: "28 Aug 2024",
       time: "12:00 AM",
       duration: "45 minutes",
-      course: "DSA - CS2001",
+      subject: {
+        name: "DSA",
+        subjectId: "CS - 2011",
+      },
       semester: "4",
     },
     {
       name: "DSA Quiz 1",
-      questions: "10",
+      questionCount: "10",
       date: "28 Aug 2024",
       time: "12:00 AM",
       duration: "45 minutes",
-      course: "DSA - CS2001",
+      subject: {
+        name: "DSA",
+        subjectId: "CS - 2011",
+      },
       semester: "4",
     },
     {
       name: "DSA Quiz 1",
-      questions: "10",
+      questionCount: "10",
       date: "28 Aug 2024",
       time: "12:00 AM",
       duration: "45 minutes",
-      course: "DSA - CS2001",
+      subject: {
+        name: "DSA",
+        subjectId: "CS - 2011",
+      },
       semester: "4",
     },
   ]);
 
   const getTestHandler = async () => {
     try {
-      const response = axios.get("http://localhost:3000/test", {
+      const response = await axios.get("http://localhost:3000/test", {
         withCredentials: true,
       });
-      console.log(response);
+      console.log(response.data);
+      setUpcomingData(response.data);
     } catch (e) {
       console.log(e);
     }
