@@ -5,10 +5,18 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import { Request, Response } from "express";
-
+import cors from "cors";
 import * as routes from "./routes";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173", // React frontend URL
+    credentials: true, // Allow credentials (cookies)
+  })
+);
+
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());

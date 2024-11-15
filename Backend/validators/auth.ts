@@ -41,7 +41,11 @@ export function validateProviderLogin(
   }
 }
 
-export function validateRegister(req: Request, res: Response, next: NextFunction) {
+export function validateRegister(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     req.body = register.parse(req.body);
     next();
