@@ -9,7 +9,7 @@ import { eq, or } from "drizzle-orm";
 
 const config = ConfigSingleton.getInstance();
 const db = getDbInstance();
-
+const prod = (process.env.NODE_ENV ?? "dev") == "prod";
 export async function login(req: Request, res: Response) {
   const data: type.login = req.body;
 
@@ -32,11 +32,21 @@ export async function login(req: Request, res: Response) {
       issuer: "quizit",
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "none",
+    var cookie_options: {
+      maxAge: number;
+      httpOnly: boolean;
+      sameSite?: "none" | "lax" | "strict";
+      secure?: boolean;
+    } = {
       maxAge: 1000 * 60 * 60 * 24 * 5,
-    }); // expires in 5 days
+      httpOnly: true,
+    };
+
+    if (prod) {
+      cookie_options["sameSite"] = "none";
+      cookie_options["secure"] = true;
+    }
+    res.cookie("auth_token", token, cookie_options); // expires in 5 days
 
     res.status(200).json({
       user: {
