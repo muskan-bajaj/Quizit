@@ -1,5 +1,6 @@
 import React, { Suspense, useContext } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import axios from "axios";
 
 import AuthContext from "./store/AuthContext";
 
@@ -15,6 +16,7 @@ const CreateTest = React.lazy(() => import("./components/CreateTest"));
 function App() {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   const authCtx = useContext(AuthContext);
+  axios.defaults.withCredentials = true;
   return (
     <>
       <BrowserRouter>

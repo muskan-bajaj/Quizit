@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../store/AuthContext";
 
@@ -10,6 +10,7 @@ import arrowUp from "../assets/arrowUp.svg";
 import plus from "../assets/plus.svg";
 
 import css from "../css/Assessment.module.css";
+import axios from "axios";
 
 export default function Assessment() {
   const authCtx = useContext(AuthContext);
@@ -93,6 +94,21 @@ export default function Assessment() {
       semester: "4",
     },
   ]);
+
+  const getTestHandler = async () => {
+    try {
+      const response = axios.get("http://localhost:3000/test", {
+        withCredentials: true,
+      });
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    getTestHandler();
+  }, []);
 
   return (
     <div className="flexpage">
