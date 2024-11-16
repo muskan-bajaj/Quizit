@@ -9,6 +9,7 @@ export default function Test() {
   const { id } = useParams();
   const [data, setData] = useState();
   const [visited, setVisited] = useState([true]);
+  const [answer, setAnswer] = useState([]);
 
   const getTestDetails = async () => {
     try {
@@ -16,7 +17,6 @@ export default function Test() {
         `http://localhost:3000/test/details?tid=${id}`
       );
       setData(response.data);
-      console.log(response.data);
     } catch (e) {
       console.log(e);
     }
@@ -48,7 +48,14 @@ export default function Test() {
           </div>
           {data && data.questionBanks[visited.length - 1].type == "long" ? (
             <div className={css.long}>
-              <textarea placeholder="Enter Your Answer..." rows={15} />
+              <textarea
+                value={answer.length > 0 ? answer[0] : ""}
+                onChange={(e) => {
+                  setAnswer([e.target.value]);
+                }}
+                placeholder="Enter Your Answer..."
+                rows={15}
+              />
             </div>
           ) : (
             <div className={css.choice}>
@@ -60,8 +67,16 @@ export default function Test() {
                         <input
                           type="checkbox"
                           value={value.option}
-                          //   checked={}
-                          // onChange={() => handleChange("2")}
+                          checked={answer.includes(value.option)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setAnswer([...answer, e.target.value]);
+                            } else {
+                              setAnswer(
+                                answer.filter((item) => item !== e.target.value)
+                              );
+                            }
+                          }}
                         />
                         <span className={css.checkmark}></span>
                         {value.option}
@@ -72,13 +87,26 @@ export default function Test() {
             </div>
           )}
           <div className={css.nextButton}>
-            <button
-              onClick={() => {
-                setVisited([...visited, true]);
-              }}
-            >
-              Next Question
-            </button>
+            {data && visited.length == data.questionCount ? (
+              <button
+                onClick={() => {
+                  console.log(answer);
+                  // setVisited([...visited, true]);
+                  // setAnswer([]);
+                }}
+              >
+                Submit Test
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setVisited([...visited, true]);
+                  setAnswer([]);
+                }}
+              >
+                Next Question
+              </button>
+            )}
           </div>
         </div>
       </div>

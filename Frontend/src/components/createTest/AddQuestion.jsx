@@ -19,10 +19,6 @@ export default function AddQuestion({ questionNo, data, setData }) {
     );
   }, [currentData]);
 
-  useEffect(() => {
-    console.log(data);
-  });
-
   return (
     <div className={css.addQuestionScreen}>
       <div className={css.heading}>Question {questionNo}</div>
