@@ -30,23 +30,6 @@
   padding: 10px;
 }
 
-.nextButton {
-  padding-top: 25px;
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.nextButton button {
-  background-color: #03c988;
-  color: white;
-  padding: 10px 25px;
-  border: none;
-  border-radius: 10px;
-  font-size: large;
-  cursor: pointer;
-}
-
 .checkbox {
   display: flex;
   align-items: center;
@@ -92,4 +75,21 @@
 
 .checkbox input:checked + .checkmark::after {
   opacity: 1;
+}
+
+.nextButton {
+  padding-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.nextButton button {
+  background-color: #03c988;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 10px;
+  font-size: large;
+  cursor: pointer;
 }
