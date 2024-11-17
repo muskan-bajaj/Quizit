@@ -102,8 +102,16 @@ export const test = pgTable("test", {
   violationCount: integer("violation_count").default(3).notNull(),
   questionCount: integer("question_count").default(0).notNull(),
   instructions: text(),
-  start: timestamp({ precision: 3, mode: "string" }).notNull(),
-  end: timestamp({ precision: 3, mode: "string" }).notNull(),
+  start: timestamp({
+    precision: 3,
+    mode: "string",
+    withTimezone: true,
+  }).notNull(),
+  end: timestamp({
+    precision: 3,
+    mode: "string",
+    withTimezone: true,
+  }).notNull(),
   suffle: boolean().default(true).notNull(),
   proctoring: boolean().default(true).notNull(),
   navigation: boolean().default(false).notNull(),

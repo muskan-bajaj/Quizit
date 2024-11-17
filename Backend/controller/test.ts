@@ -4,9 +4,31 @@ import * as schema from "../drizzle/schema";
 import { getDbInstance } from "../drizzle/db";
 import { inArray, and, eq, sql, lt, notExists, or, SQL } from "drizzle-orm";
 import { report } from "process";
-import moment from "moment";
+import moment from "moment-timezone";
+import { object } from "zod";
 
 const db = getDbInstance();
+moment.tz.setDefault("Asia/Kolkata");
+
+function groupIntoOpenClosed(tests: any[]) {
+  const today = moment(); // Get today's date
+
+  return tests.reduce<{
+    closed: typeof tests;
+    open: typeof tests;
+  }>(
+    (acc, item) => {
+      const endDate = moment(item.end);
+      if (endDate.date() < today.date()) {
+        acc.closed.push(item); // Add to "past" group
+      } else {
+        acc.open.push(item); // Add to "future" group
+      }
+      return acc;
+    },
+    { closed: [], open: [] } // Initialize groups
+  );
+}
 
 export async function createTest(req: Request, res: Response) {
   try {
@@ -40,8 +62,8 @@ export async function createTest(req: Request, res: Response) {
         message: { error: "Students not found", missing: student_missing },
       };
     }
-
     // Raw Data into db
+    console.log(moment(rawData.setting.start_time).format());
     await db.transaction(async (trx) => {
       var test = await trx
         .insert(schema.test)
@@ -52,8 +74,8 @@ export async function createTest(req: Request, res: Response) {
           violationCount: rawData.setting.violation_count,
           questionCount: rawData.setting.question_count,
           instructions: rawData.setting.instructions,
-          start: rawData.setting.start_time,
-          end: rawData.setting.end_time,
+          start: moment(rawData.setting.start_time).format(),
+          end: moment(rawData.setting.end_time).format(),
           suffle: rawData.setting.shuffle_questions,
           proctoring: rawData.setting.proctoring,
           navigation: rawData.setting.allow_navigation,
@@ -121,7 +143,8 @@ export async function createTest(req: Request, res: Response) {
     });
     res.sendStatus(200);
   } catch (err: any) {
-    res.status(err.code).json(err.message);
+    console.log(err);
+    res.status(500).json(err.message);
   }
 }
 
@@ -137,9 +160,11 @@ export async function getTest(req: Request, res: Response) {
         .from(schema.test)
         .where(eq(schema.test.createdBy, req.locals.user.uid));
 
-      res.json(tests);
+      const groupedData = groupIntoOpenClosed(tests);
+      res.json(groupedData);
       return;
     }
+
     const tests = await db.query.testManager.findMany({
       columns: {},
       where: eq(schema.testManager.uid, req.locals.user.uid),
@@ -168,7 +193,7 @@ export async function getTest(req: Request, res: Response) {
       };
     });
 
-    res.json(testsRes);
+    res.json(groupIntoOpenClosed(testsRes));
   } catch (error: any) {
     console.log(error);
     res.status(error.code).json(error.message);
@@ -215,6 +240,7 @@ export async function getTestDetails(req: Request, res: Response) {
       res.json(test);
       return;
     }
+
     const testManager = await db.query.testManager.findFirst({
       where: and(
         eq(schema.testManager.uid, req.locals.user.uid),
