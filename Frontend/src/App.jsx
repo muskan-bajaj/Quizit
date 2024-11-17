@@ -14,6 +14,10 @@ const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
 const CreateTest = React.lazy(() => import("./components/CreateTest"));
 const Test = React.lazy(() => import("./components/Test"));
+const ResultAnalysis = React.lazy(() => import("./components/ResultAnalysis"));
+const SubmissionAnalysis = React.lazy(() =>
+  import("./components/SubmissionAnalysis")
+);
 
 function App() {
   // const { id } = useParams();
@@ -86,6 +90,26 @@ function App() {
               element={
                 <Suspense>
                   <Test />
+                </Suspense>
+              }
+            />
+          )}
+          {isLoggedIn && authCtx.user.access == "Student" && (
+            <Route
+              path="result/:id"
+              element={
+                <Suspense>
+                  <ResultAnalysis />
+                </Suspense>
+              }
+            />
+          )}
+          {isLoggedIn && authCtx.user.access == "Teacher" && (
+            <Route
+              path="submission/:id"
+              element={
+                <Suspense>
+                  <SubmissionAnalysis />
                 </Suspense>
               }
             />

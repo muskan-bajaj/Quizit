@@ -35,7 +35,7 @@ export default function Test() {
   return (
     <>
       <div className="flexpage">
-        <QuestionNavigation data={data} visited={visited} />
+        <QuestionNavigation data={data} visited={visited} type="view" />
         <div className={css.testScreen}>
           <div className={css.heading}>Question {visited.length}</div>
           <div className={css.answerScreen}>

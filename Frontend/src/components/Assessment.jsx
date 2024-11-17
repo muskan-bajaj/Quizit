@@ -105,7 +105,7 @@ export default function Assessment() {
           </div>
           {upcomingView && (
             <div className={css.sectionDetails}>
-              {upcomingData.map((data, key) => {
+              {closedData.map((data, key) => {
                 return <AssessmentCard key={key} data={data} closed={false} />;
               })}
               {authCtx.user.access == "Teacher" ? (
