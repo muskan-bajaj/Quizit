@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import * as types from "./interface/test";
 import * as schema from "../drizzle/schema";
 import { getDbInstance } from "../drizzle/db";
@@ -6,9 +6,21 @@ import { inArray, and, eq, sql, lt, notExists, or, SQL } from "drizzle-orm";
 import { report } from "process";
 import moment from "moment-timezone";
 import { object } from "zod";
+import {
+  InvalidUserException,
+  InvalidDataException,
+  DataAleadryExistsException,
+  ValidationError,
+} from "../customException";
+import { CustomLogger } from "../logger";
+import { submitQuestionSchema } from "../validators/test";
+import { getMarksFromAI } from "../utils/getMarksFromAI";
 
+const logger = new CustomLogger();
 const db = getDbInstance();
-moment.tz.setDefault("Asia/Kolkata");
+function roundHalf(num: number) {
+  return Math.ceil(num * 2) / 2;
+}
 
 function groupIntoOpenClosed(tests: any[]) {
   const today = moment(); // Get today's date
@@ -30,183 +42,168 @@ function groupIntoOpenClosed(tests: any[]) {
   );
 }
 
-export async function createTest(req: Request, res: Response) {
-  try {
-    if (!req.locals.user) {
-      throw { code: 401, message: "Unauthorized" };
-    }
-    const rawData: types.QuizRequestBody = req.body;
+export async function createTest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const rawData: types.QuizRequestBody = req.body;
 
-    const student_list = rawData.setting.student_list;
-    const student_list_db = await db
-      .select({ uid: schema.user.uid, rollno: schema.user.rollno })
-      .from(schema.user)
-      .where(
-        and(
-          inArray(schema.user.rollno, student_list),
-          eq(schema.user.role, "Student")
-        )
-      );
-    const db_roll_set = new Set(
-      student_list_db.map((student) => student.rollno)
+  const student_list = rawData.setting.student_list;
+  const student_list_db = await db
+    .select({ uid: schema.user.uid, rollno: schema.user.rollno })
+    .from(schema.user)
+    .where(
+      and(
+        inArray(schema.user.rollno, student_list),
+        eq(schema.user.role, "Student")
+      )
     );
-    const student_missing: Array<number> = [];
-    student_list.forEach((rollno) => {
-      if (!db_roll_set.has(rollno)) {
-        student_missing.push(rollno);
-      }
-    });
-    if (student_missing.length !== 0) {
-      throw {
-        code: 400,
-        message: { error: "Students not found", missing: student_missing },
-      };
+  const db_roll_set = new Set(student_list_db.map((student) => student.rollno));
+  const student_missing: Array<number> = [];
+  student_list.forEach((rollno) => {
+    if (!db_roll_set.has(rollno)) {
+      student_missing.push(rollno);
     }
-    // Raw Data into db
-    console.log(moment(rawData.setting.start_time).format());
-    await db.transaction(async (trx) => {
-      var test = await trx
-        .insert(schema.test)
-        .values({
-          name: rawData.setting.name,
-          semester: rawData.setting.semester,
-          subjectId: rawData.setting.subject,
-          violationCount: rawData.setting.violation_count,
-          questionCount: rawData.setting.question_count,
-          instructions: rawData.setting.instructions,
-          start: moment(rawData.setting.start_time).format(),
-          end: moment(rawData.setting.end_time).format(),
-          suffle: rawData.setting.shuffle_questions,
-          proctoring: rawData.setting.proctoring,
-          navigation: rawData.setting.allow_navigation,
-          createdBy: req.locals.user.uid,
+  });
+  if (student_missing.length !== 0) {
+    return next(
+      new InvalidDataException(
+        `Students with rollno ${student_missing.join(",")} not found`
+      )
+    );
+  }
+  // Raw Data into db
+  await db.transaction(async (trx) => {
+    var test = await trx
+      .insert(schema.test)
+      .values({
+        name: rawData.setting.name,
+        semester: rawData.setting.semester,
+        subjectId: rawData.setting.subject,
+        violationCount: rawData.setting.violation_count,
+        questionCount: rawData.setting.question_count,
+        instructions: rawData.setting.instructions,
+        start: moment(rawData.setting.start_time).format(),
+        end: moment(rawData.setting.end_time).format(),
+        suffle: rawData.setting.shuffle_questions,
+        proctoring: rawData.setting.proctoring,
+        navigation: rawData.setting.allow_navigation,
+        createdBy: req.locals.user.uid,
+      })
+      .returning();
+
+    var questions = await trx
+      .insert(schema.questionBank)
+      .values(
+        rawData.questions.map((question, index) => {
+          return {
+            question: question.question,
+            answer: question.answer,
+            type: question.type,
+            marksAwarded: question.marks_awarded,
+            tid: test[0].tid,
+            order: index + 1, // Adding the order property
+          };
         })
-        .returning();
-
-      var questions = await trx
-        .insert(schema.questionBank)
-        .values(
-          rawData.questions.map((question, index) => {
-            return {
-              question: question.question,
-              answer: question.answer,
-              type: question.type,
-              marksAwarded: question.marks_awarded,
-              tid: test[0].tid,
-              order: index + 1, // Adding the order property
-            };
-          })
-        )
-        .returning({
-          qid: schema.questionBank.qid,
-          order: schema.questionBank.order,
-        });
-
-      var optionData = questions
-        .map((question, index) => {
-          if (rawData.questions[question.order - 1].type === "choice") {
-            return rawData.questions[question.order - 1].options?.map(
-              (option) => {
-                return {
-                  option: option.option,
-                  correct: option.correct,
-                  qid: question.qid,
-                };
-              }
-            );
-          }
-        })
-        .filter((option) => option)
-        .flat();
-
-      var options = await trx
-        .insert(schema.option)
-        .values(
-          optionData.filter(
-            (option): option is NonNullable<typeof option> =>
-              option !== undefined
-          )
-        );
-
-      //mapp test to student
-      var mappingData = student_list_db.map((student) => {
-        return {
-          tid: test[0].tid,
-          uid: student.uid,
-        };
+      )
+      .returning({
+        qid: schema.questionBank.qid,
+        order: schema.questionBank.order,
       });
 
-      var mapping = await trx
-        .insert(schema.testManager)
-        .values(mappingData)
-        .returning();
+    var optionData = questions
+      .map((question, index) => {
+        if (rawData.questions[question.order - 1].type === "choice") {
+          return rawData.questions[question.order - 1].options?.map(
+            (option) => {
+              return {
+                option: option.option,
+                correct: option.correct,
+                qid: question.qid,
+              };
+            }
+          );
+        }
+      })
+      .filter((option) => option)
+      .flat();
+
+    var options = await trx
+      .insert(schema.option)
+      .values(
+        optionData.filter(
+          (option): option is NonNullable<typeof option> => option !== undefined
+        )
+      );
+
+    //mapp test to student
+    var mappingData = student_list_db.map((student) => {
+      return {
+        tid: test[0].tid,
+        uid: student.uid,
+      };
     });
-    res.sendStatus(200);
-  } catch (err: any) {
-    console.log(err);
-    res.status(500).json(err.message);
-  }
+
+    var mapping = await trx
+      .insert(schema.testManager)
+      .values(mappingData)
+      .returning();
+  });
+  res.sendStatus(200);
 }
 
-export async function getTest(req: Request, res: Response) {
-  try {
-    if (!req.locals.user) {
-      throw { code: 401, message: "Unauthorized" };
-    }
+export async function getTest(req: Request, res: Response, next: NextFunction) {
+  if (req.locals.user.role === "Teacher") {
+    const tests = await db
+      .select()
+      .from(schema.test)
+      .where(eq(schema.test.createdBy, req.locals.user.uid));
 
-    if (req.locals.user.role === "Teacher") {
-      const tests = await db
-        .select()
-        .from(schema.test)
-        .where(eq(schema.test.createdBy, req.locals.user.uid));
+    const groupedData = groupIntoOpenClosed(tests);
+    res.json(groupedData);
+    return;
+  }
 
-      const groupedData = groupIntoOpenClosed(tests);
-      res.json(groupedData);
-      return;
-    }
-
-    const tests = await db.query.testManager.findMany({
-      columns: {},
-      where: eq(schema.testManager.uid, req.locals.user.uid),
-      with: {
-        test: {
-          with: {
-            subject: true,
-            user: {
-              columns: {
-                name: true,
-                username: true,
-              },
+  const tests = await db.query.testManager.findMany({
+    columns: {},
+    where: eq(schema.testManager.uid, req.locals.user.uid),
+    with: {
+      test: {
+        with: {
+          subject: true,
+          user: {
+            columns: {
+              name: true,
+              username: true,
             },
           },
         },
       },
-    });
+    },
+  });
 
-    var testsFinal = tests.map((test) => test.test);
-    var testsRes = testsFinal.map((test) => {
-      return {
-        ...test,
-        createdBy: test.user,
-        subjectId: undefined,
-        user: undefined,
-      };
-    });
+  var testsFinal = tests.map((test) => test.test);
+  var testsRes = testsFinal.map((test) => {
+    return {
+      ...test,
+      createdBy: test.user,
+      subjectId: undefined,
+      user: undefined,
+    };
+  });
 
-    res.json(groupIntoOpenClosed(testsRes));
-  } catch (error: any) {
-    console.log(error);
-    res.status(error.code).json(error.message);
-  }
+  res.json(groupIntoOpenClosed(testsRes));
 }
 
-export async function getTestDetails(req: Request, res: Response) {
+export async function getTestDetails(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    if (!req.locals.user) {
-      throw { code: 401, message: "Unauthorized" };
-    }
     if (!req.query.tid) {
-      throw { code: 400, message: "Test Id is required" };
+      return next(new InvalidDataException("Test ID is required"));
     }
 
     if (req.locals.user.role === "Teacher") {
@@ -288,7 +285,7 @@ export async function getTestDetails(req: Request, res: Response) {
     });
 
     if (!testManager) {
-      throw { code: 404, message: "Test not found" };
+      return next(new InvalidDataException("Test not found"));
     }
 
     const submissions = await db.query.submission.findMany({
@@ -304,9 +301,158 @@ export async function getTestDetails(req: Request, res: Response) {
       questionBanks: shuffled,
     });
   } catch (error: any) {
-    console.log(error);
+    logger.error(error);
     res.status(500).json(error.message);
   }
 }
 
-export async function startTest(req: Request, res: Response) {}
+export async function startTest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const testManager = await db.query.testManager.findFirst({
+    where: and(
+      eq(schema.testManager.uid, req.locals.user.uid),
+      eq(schema.testManager.tid, req.body.tid)
+    ),
+  });
+
+  if (!testManager) {
+    return next(new InvalidUserException());
+  }
+
+  if (testManager.startedAt) {
+    return next(new DataAleadryExistsException("Test already started"));
+  }
+
+  var updated = await db
+    .update(schema.testManager)
+    .set({
+      startedAt: moment().format(),
+    })
+    .where(eq(schema.testManager.tmid, testManager.tmid));
+
+  res.sendStatus(200);
+}
+
+export async function endTest(req: Request, res: Response, next: NextFunction) {
+  const testManager = await db.query.testManager.findFirst({
+    where: and(
+      eq(schema.testManager.uid, req.locals.user.uid),
+      eq(schema.testManager.tid, req.body.tid)
+    ),
+  });
+
+  if (!testManager) {
+    return next(new InvalidUserException());
+  }
+
+  if (testManager.endedAt) {
+    return next(new DataAleadryExistsException("Test already ended"));
+  }
+
+  var updated = await db
+    .update(schema.testManager)
+    .set({
+      endedAt: moment().format(),
+    })
+    .where(eq(schema.testManager.tmid, testManager.tmid));
+
+  res.sendStatus(200);
+}
+
+export async function submitQuestion(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const testManager = await db.query.testManager.findFirst({
+    where: and(
+      eq(schema.testManager.uid, req.locals.user.uid),
+      eq(schema.testManager.tid, req.body.tid)
+    ),
+    with: {
+      test: true,
+    },
+  });
+
+  const question = await db.query.questionBank.findFirst({
+    where: eq(schema.questionBank.qid, req.body.qid),
+    with: {
+      options: true,
+    },
+  });
+
+  logger.log(moment(testManager!.test.end), moment());
+  if (
+    !(
+      question &&
+      testManager &&
+      !testManager.endedAt &&
+      moment(testManager.test.end) > moment()
+    )
+  ) {
+    return next(new InvalidDataException("Question not found"));
+  }
+
+  if (question.type === "choice" && !req.body.selected) {
+    next(new ValidationError("selected needed for choice question"));
+  }
+
+  if (question.type === "long" && !req.body.answer) {
+    next(new ValidationError("answer needed for long question"));
+  }
+
+  if (question.type === "choice") {
+    var correctAns = 0;
+    var correctOptions = 0;
+    question.options.every((option) => {
+      if (option.correct) {
+        if (req.body.selected.some((e: any) => e == option.oid)) {
+          correctAns += 1;
+        }
+        correctOptions += 1;
+      }
+      return true;
+    });
+
+    const markAwarded = roundHalf(
+      (correctAns / correctOptions) * question.marksAwarded
+    );
+
+    await db
+      .insert(schema.submission)
+      .values({
+        qid: question.qid,
+        tmid: testManager.tmid,
+        marksObtained: markAwarded,
+        submittedAt: moment().format(),
+      })
+      .onConflictDoUpdate({
+        target: [schema.submission.qid, schema.submission.tmid],
+        set: {
+          marksObtained: markAwarded,
+          submittedAt: moment().format(),
+        },
+      });
+  } else {
+    var marksObtained = getMarksFromAI(req.body);
+    await db
+      .insert(schema.submission)
+      .values({
+        qid: question.qid,
+        tmid: testManager.tmid,
+        marksObtained: marksObtained,
+        submittedAt: moment().format(),
+      })
+      .onConflictDoUpdate({
+        target: [schema.submission.qid, schema.submission.tmid],
+        set: {
+          marksObtained: 0,
+          submittedAt: moment().format(),
+        },
+      });
+  }
+  res.sendStatus(200);
+}

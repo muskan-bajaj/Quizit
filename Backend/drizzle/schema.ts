@@ -1,3 +1,4 @@
+import { table } from "console";
 import {
   pgTable,
   varchar,
@@ -9,6 +10,9 @@ import {
   boolean,
   uniqueIndex,
   pgEnum,
+  decimal,
+  real,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm/relations";
 
@@ -34,6 +38,7 @@ export const fileManager = pgTable("fileManager", {
   uploadedAt: timestamp("uploaded_at", {
     precision: 3,
     mode: "string",
+    withTimezone: true,
   }).notNull(),
 });
 
@@ -67,27 +72,36 @@ export const subject = pgTable("subject", {
   subjectId: text().notNull(),
 });
 
-export const submission = pgTable("submission", {
-  sid: serial().primaryKey().notNull(),
-  tmid: integer()
-    .references(() => testManager.tmid, {
-      onDelete: "restrict",
-      onUpdate: "cascade",
-    })
-    .notNull(),
-  marksObtained: integer("marks_obtained"),
-  submittedAt: timestamp("submitted_at", {
-    precision: 3,
-    mode: "string",
-  }).notNull(),
-  isAi: boolean("is_ai"),
-  qid: integer()
-    .references(() => questionBank.qid, {
-      onDelete: "restrict",
-      onUpdate: "cascade",
-    })
-    .notNull(),
-});
+export const submission = pgTable(
+  "submission",
+  {
+    sid: serial().primaryKey().notNull(),
+    tmid: integer()
+      .references(() => testManager.tmid, {
+        onDelete: "restrict",
+        onUpdate: "cascade",
+      })
+      .notNull(),
+    marksObtained: real("marks_obtained"),
+    submittedAt: timestamp("submitted_at", {
+      precision: 3,
+      mode: "string",
+      withTimezone: true,
+    }).notNull(),
+    isAi: boolean("is_ai"),
+    qid: integer()
+      .references(() => questionBank.qid, {
+        onDelete: "restrict",
+        onUpdate: "cascade",
+      })
+      .notNull(),
+  },
+  (table) => {
+    return {
+      uk: unique("submission_unique").on(table.tmid, table.qid),
+    };
+  }
+);
 
 export const test = pgTable("test", {
   tid: serial().primaryKey().notNull(),
@@ -129,8 +143,16 @@ export const testManager = pgTable("testManager", {
   uid: integer()
     .references(() => user.uid, { onDelete: "restrict", onUpdate: "cascade" })
     .notNull(),
-  startedAt: timestamp("started_at", { precision: 3, mode: "string" }),
-  endedAt: timestamp("ended_at", { precision: 3, mode: "string" }),
+  startedAt: timestamp("started_at", {
+    precision: 3,
+    mode: "string",
+    withTimezone: true,
+  }),
+  endedAt: timestamp("ended_at", {
+    precision: 3,
+    mode: "string",
+    withTimezone: true,
+  }),
   violation: integer().default(0).notNull(),
 });
 

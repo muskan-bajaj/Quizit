@@ -1,11 +1,13 @@
 import { getDbInstance } from "../drizzle/db";
 import * as schema from "../drizzle/schema";
+import { CustomLogger } from "../logger";
 
 const db = getDbInstance();
+const logger = new CustomLogger();
 export class ConfigSingleton {
   private static instance: ConfigSingleton;
-  config:any;
-  configRegister:boolean;
+  config: any;
+  configRegister: boolean;
 
   private constructor() {
     this.fetchConfig();
@@ -21,7 +23,7 @@ export class ConfigSingleton {
     });
     this.config = inject;
     this.configRegister = true;
-    console.log("Config Fetched");
+    logger.log("Config Fetched");
   }
 
   public static getInstance(): ConfigSingleton {

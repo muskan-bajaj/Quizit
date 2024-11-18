@@ -1,23 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { InvalidUserException } from "../customException";
+import { CustomLogger } from "../logger";
 
+const logger = new CustomLogger();
 export async function protect(req: Request, res: Response, next: NextFunction) {
   var token = req.cookies.auth_token ?? "";
+
   try {
-    if (token) {
-      try {
-        var val: any = await jwt.verify(token, process.env.JWT_SECRET!);
-        req.locals.uid = val.uid;
-        next();
-      } catch (err) {
-        console.log(err);
-        res.clearCookie("token");
-        throw "Invalid Token";
-      }
-    } else {
-      throw "Auth Required";
-    }
+    var val: any = await jwt.verify(token, process.env.JWT_SECRET!);
+    req.locals.uid = val.uid;
+    next();
   } catch (error: any) {
-    res.status(401).json(error);
+    logger.error("error", error);
+    next(new InvalidUserException());
   }
 }
