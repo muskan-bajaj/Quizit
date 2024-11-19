@@ -14,9 +14,26 @@ router.post(
   validator.test.newTest,
   controller.test.createTest
 );
+router.post(
+  "/start",
+  middleware.check.has_role(["Student"]),
+  validator.test.controlTest,
+  controller.test.startTest
+);
+router.post(
+  "/end",
+  middleware.check.has_role(["Student"]),
+  validator.test.controlTest,
+  controller.test.endTest
+);
+router.post(
+  "/submit",
+  middleware.check.has_role(["Student"]),
+  validator.test.submitQuestion,
+  controller.test.submitQuestion
+);
 
-router.get("/", controller.test.getTest);
 router.get("/details", controller.test.getTestDetails);
-router.get("/startTest", controller.test.startTest);
+router.get("/", controller.test.getTest);
 
 export default router;

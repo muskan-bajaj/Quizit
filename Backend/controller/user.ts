@@ -6,10 +6,13 @@ import { ConfigSingleton } from "../utils/config";
 import { getDbInstance } from "../drizzle/db";
 import * as schema from "../drizzle/schema";
 import { eq, or } from "drizzle-orm";
+import { CustomLogger } from "../logger";
 
+const logger = new CustomLogger();
 const config = ConfigSingleton.getInstance();
 const db = getDbInstance();
 const prod = (process.env.NODE_ENV ?? "dev") == "prod";
+
 export async function login(req: Request, res: Response) {
   const data: type.login = req.body;
 
@@ -64,7 +67,7 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function providerLogin(req: Request, res: Response) {
-  console.log(req.body);
+  logger.log(req.body);
 }
 
 export async function register(req: Request, res: Response) {
