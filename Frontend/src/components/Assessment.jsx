@@ -73,7 +73,9 @@ export default function Assessment() {
   const getTestHandler = async () => {
     try {
       const response = await axios.get("http://localhost:3000/test");
-      setUpcomingData(response.data);
+      // setUpcomingData(response.data);
+      setUpcomingData(response.data.open);
+      setClosedData(response.data.closed);
     } catch (e) {
       console.log(e);
     }
@@ -103,9 +105,9 @@ export default function Assessment() {
               />
             </div>
           </div>
-          {upcomingView && (
+          {upcomingView && upcomingData && (
             <div className={css.sectionDetails}>
-              {closedData.map((data, key) => {
+              {upcomingData.map((data, key) => {
                 return <AssessmentCard key={key} data={data} closed={false} />;
               })}
               {authCtx.user.access == "Teacher" ? (
@@ -138,7 +140,7 @@ export default function Assessment() {
               />
             </div>
           </div>
-          {closedView && (
+          {closedView && closedData && (
             <div className={css.sectionDetails}>
               {closedData.map((data, key) => {
                 return <AssessmentCard key={key} data={data} closed={true} />;

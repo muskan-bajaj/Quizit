@@ -23,6 +23,20 @@ export default function Test() {
         `http://localhost:3000/test/details?tid=${id}`
       );
       setData(response.data);
+      console.log(response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const submitAnswerHandler = async (qid, answer) => {
+    try {
+      const response = await axios.post("http://localhost:3000/test/submit", {
+        tid: id,
+        qid: qid,
+        answer: answer,
+      });
+      console.log(response);
     } catch (e) {
       console.log(e);
     }
@@ -100,7 +114,10 @@ export default function Test() {
                 <button
                   onClick={() => {
                     setViewSubmitModal(true);
-                    console.log(answer);
+                    submitAnswerHandler(
+                      data.questionBanks[visited.length - 1].qid,
+                      answer
+                    );
                   }}
                 >
                   Submit Test
@@ -108,6 +125,10 @@ export default function Test() {
               ) : (
                 <button
                   onClick={() => {
+                    submitAnswerHandler(
+                      data.questionBanks[visited.length - 1].qid,
+                      answer
+                    );
                     setVisited([...visited, true]);
                     setAnswer([]);
                   }}
