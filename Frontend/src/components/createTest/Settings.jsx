@@ -11,9 +11,9 @@ export default function Settings({ data, setData }) {
         <input
           type="number"
           placeholder="Enter Count"
-          value={data.violation}
+          value={data.violation_count}
           onChange={(e) => {
-            setData({ ...data, violation: e.target.value });
+            setData({ ...data, violation_count: e.target.value });
           }}
         />
       </div>
@@ -31,9 +31,9 @@ export default function Settings({ data, setData }) {
       <div className={css.inputs}>
         <label htmlFor="shuffle">Shuffle Questions</label>
         <select
-          value={data.shuffle}
+          value={data.shuffle_questions}
           onChange={(e) => {
-            setData({ ...data, shuffle: e.target.value });
+            setData({ ...data, shuffle_questions: e.target.value });
           }}
         >
           <option value={true}>True</option>
@@ -43,9 +43,9 @@ export default function Settings({ data, setData }) {
       <div className={css.inputs}>
         <label htmlFor="proctor">Enable Proctoring</label>
         <select
-          value={data.proctor}
+          value={data.proctoring}
           onChange={(e) => {
-            setData({ ...data, proctor: e.target.value });
+            setData({ ...data, proctoring: e.target.value });
           }}
         >
           <option value={true}>True</option>
@@ -61,12 +61,12 @@ export default function Settings({ data, setData }) {
             onFocus={(e) => (e.target.type = "datetime-local")}
             onBlur={(e) => (e.target.type = "text")}
             value={
-              data.start
-                ? new Date(data.start).toISOString().substring(0, 16)
+              data.start_time
+                ? new Date(data.start_time).toISOString().substring(0, 16)
                 : ""
             }
             onChange={(e) => {
-              setData({ ...data, start: e.target.value });
+              setData({ ...data, start_time: e.target.value });
             }}
           />
           <input
@@ -75,10 +75,12 @@ export default function Settings({ data, setData }) {
             onFocus={(e) => (e.target.type = "datetime-local")}
             onBlur={(e) => (e.target.type = "text")}
             value={
-              data.end ? new Date(data.end).toISOString().substring(0, 16) : ""
+              data.end_time
+                ? new Date(data.end_time).toISOString().substring(0, 16)
+                : ""
             }
             onChange={(e) => {
-              setData({ ...data, end: e.target.value });
+              setData({ ...data, end_time: e.target.value });
             }}
           />
         </div>
@@ -99,9 +101,9 @@ export default function Settings({ data, setData }) {
         <textarea
           rows={10}
           placeholder="Enter Instruction"
-          value={data.instructions}
+          value={data.instruction}
           onChange={(e) => {
-            setData({ ...data, instructions: e.target.value });
+            setData({ ...data, instruction: e.target.value });
           }}
         />
       </div>

@@ -7,20 +7,20 @@ export default function CreateTest() {
   const [selected, setSelected] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(2);
   const [settingsData, setSettingsData] = useState({
-    violation: "",
+    violation_count: "",
     totalQuestions: "",
-    shuffle: true,
-    proctor: true,
-    start: "",
-    end: "",
+    shuffle_questions: true,
+    proctoring: true,
+    start_time: "",
+    end_time: "",
     rollno: "",
-    instructions: "",
+    instruction: "",
   });
   const [questionData, setQuestionData] = useState([
     {
-      marks: "",
+      marks_awarded: "",
       question: "",
-      questionType: "long",
+      type: "long",
       answer: [],
       options: [],
     },

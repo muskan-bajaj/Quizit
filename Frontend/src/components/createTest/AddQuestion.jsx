@@ -27,10 +27,10 @@ export default function AddQuestion({ questionNo, data, setData }) {
         <input
           type="number"
           placeholder="Enter Marks"
-          value={currentData.marks}
+          value={currentData.marks_awarded}
           id="marks"
           onChange={(e) => {
-            setCurrentData({ ...currentData, marks: e.target.value });
+            setCurrentData({ ...currentData, marks_awarded: e.target.value });
           }}
         />
       </div>
@@ -52,12 +52,12 @@ export default function AddQuestion({ questionNo, data, setData }) {
       <div className={css.inputs}>
         <label htmlFor="type">Question Type</label>
         <select
-          value={currentData.questionType}
+          value={currentData.type}
           id="type"
           onChange={(e) => {
             setCurrentData({
               ...currentData,
-              questionType: e.target.value,
+              type: e.target.value,
             });
           }}
         >
@@ -65,7 +65,7 @@ export default function AddQuestion({ questionNo, data, setData }) {
           <option value="choice">Multiple Choice Question (MCQ)</option>
         </select>
       </div>
-      {currentData.questionType == "long" ? (
+      {currentData.type == "long" ? (
         <div className={css.inputs}>
           <label htmlFor="answers">Enter Correct Answer</label>
           <textarea

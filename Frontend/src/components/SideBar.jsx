@@ -1,6 +1,7 @@
 // import React from "react";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import AuthContext from "../store/AuthContext";
 
 import logo from "../assets/KIITLogo.svg";
@@ -26,6 +27,19 @@ export default function SideBar({
 }) {
   const redirect = useNavigate();
   const authCtx = useContext(AuthContext);
+
+  const createTestHandler = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/test/create", {
+        setting: settingsData,
+        questions: questionData,
+      });
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <>
       <div className={css.sidebar}>
@@ -124,9 +138,9 @@ export default function SideBar({
               setQuestionData([
                 ...questionData,
                 {
-                  marks: "",
+                  marks_awarded: "",
                   question: "",
-                  questionType: "long",
+                  type: "long",
                   answer: "",
                   options: [],
                 },
@@ -139,8 +153,8 @@ export default function SideBar({
             className={css.navItems}
             style={{ backgroundColor: "#03C988" }}
             onClick={() => {
-              console.log(questionData);
-              console.log(settingsData);
+              console.log({ setting: settingsData, questions: questionData });
+              createTestHandler();
               confirm("Do you want to publish the test?");
               redirect("/assessment");
             }}
