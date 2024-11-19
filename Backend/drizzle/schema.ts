@@ -89,6 +89,7 @@ export const submission = pgTable(
       withTimezone: true,
     }).notNull(),
     isAi: boolean("is_ai"),
+    AiExplanation: text("ai_explanation"),
     qid: integer()
       .references(() => questionBank.qid, {
         onDelete: "restrict",

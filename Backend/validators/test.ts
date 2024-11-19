@@ -17,7 +17,6 @@ export const newTestSchema = z.object({
     end_time: z.string().datetime({ offset: true }),
     shuffle_questions: z.boolean(),
     proctoring: z.boolean(),
-    allow_navigation: z.boolean(),
   }),
   questions: z
     .array(
@@ -41,8 +40,7 @@ export const controlTestSchema = z.object({
 export const submitQuestionSchema = z.object({
   tid: z.number(),
   qid: z.number(),
-  answer: z.string().optional(),
-  selected: z.array(z.number()).optional(),
+  answer: z.array(z.string()).min(1),
 });
 
 export function newTest(req: Request, res: Response, next: NextFunction) {
