@@ -51,8 +51,7 @@ export default function ResultCard({ data, declared }) {
         {new Date(data.start).toLocaleTimeString()} ({difference})
       </div>
       <div className={css.course}>
-        {" "}
-        {data.subject.name} ({data.subject.subjectId})
+        {/* {data.subject.name} ({data.subject.subjectId}) */}
       </div>
       <div className={css.semester}>{data.semester}th Semester</div>
       <div className={css.studentButton}>

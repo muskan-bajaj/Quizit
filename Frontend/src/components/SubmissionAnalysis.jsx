@@ -17,6 +17,7 @@ export default function SubmissionAnalysis() {
       const response = await axios.get(
         `http://localhost:3000/test/details?tid=${id}`
       );
+      console.log(response);
       setData(response.data);
       setQuestionBank(response.data.questionBanks);
       console.log(questionBank);
