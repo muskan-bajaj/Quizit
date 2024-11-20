@@ -42,6 +42,26 @@ function groupIntoOpenClosed(tests: any[]) {
   );
 }
 
+function groupIntoReports(tests: any[]) {
+  const today = moment(); // Get today's date
+
+  return tests.reduce<{
+    published: typeof tests;
+    pending: typeof tests;
+  }>(
+    (acc, item) => {
+      const endDate = moment(item.end);
+      if (!item.reportPublished) {
+        acc.pending.push(item); // Add to "past" group
+      } else {
+        acc.published.push(item); // Add to "future" group
+      }
+      return acc;
+    },
+    { pending: [], published: [] } // Initialize groups
+  );
+}
+
 export async function createTest(
   req: Request,
   res: Response,
@@ -155,10 +175,18 @@ export async function createTest(
 
 export async function getTest(req: Request, res: Response, next: NextFunction) {
   if (req.locals.user.role === "Teacher") {
-    const tests = await db
-      .select()
-      .from(schema.test)
-      .where(eq(schema.test.createdBy, req.locals.user.uid));
+    const tests = await db.query.test.findMany({
+      where: eq(schema.test.createdBy, req.locals.user.uid),
+      with: {
+        subject: true,
+        user: {
+          columns: {
+            name: true,
+            username: true,
+          },
+        },
+      },
+    });
 
     const groupedData = groupIntoOpenClosed(tests);
     res.json(groupedData);
@@ -509,5 +537,71 @@ export async function getTestReport(
     };
   });
 
-  res.json(report);
+  const totalMarks = report.reduce((acc, item) => {
+    return acc + item.marksAwarded;
+  }, 0);
+
+  const totalMarksObtained = report.reduce((acc, item) => {
+    return acc + (item.marksObtained ?? 0);
+  }, 0);
+
+  res.json({
+    test: { totalMarksObtained, totalMarks, ...testManager.test },
+    submission: [...report],
+  });
+}
+
+export async function getTestReportList(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (req.locals.user.role === "Teacher") {
+    const tests = await db.query.test.findMany({
+      where: eq(schema.test.createdBy, req.locals.user.uid),
+      with: {
+        subject: true,
+        user: {
+          columns: {
+            name: true,
+            username: true,
+          },
+        },
+      },
+    });
+
+    const groupedData = groupIntoReports(tests);
+    res.json(groupedData);
+    return;
+  }
+
+  const tests = await db.query.testManager.findMany({
+    columns: {},
+    where: eq(schema.testManager.uid, req.locals.user.uid),
+    with: {
+      test: {
+        with: {
+          subject: true,
+          user: {
+            columns: {
+              name: true,
+              username: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  var testsFinal = tests.map((test) => test.test);
+  var testsRes = testsFinal.map((test) => {
+    return {
+      ...test,
+      createdBy: test.user,
+      subjectId: undefined,
+      user: undefined,
+    };
+  });
+
+  res.json(groupIntoReports(testsRes));
 }
