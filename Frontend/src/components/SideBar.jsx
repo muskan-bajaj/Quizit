@@ -31,7 +31,10 @@ export default function SideBar({
   const createTestHandler = async () => {
     try {
       const response = await axios.post("http://localhost:3000/test/create", {
-        setting: settingsData,
+        setting: {
+          ...settingsData,
+          student_list: settingsData.student_list.split(","),
+        },
         questions: questionData,
       });
       console.log(response);
@@ -153,7 +156,6 @@ export default function SideBar({
             className={css.navItems}
             style={{ backgroundColor: "#03C988" }}
             onClick={() => {
-              console.log({ setting: settingsData, questions: questionData });
               createTestHandler();
               confirm("Do you want to publish the test?");
               redirect("/assessment");

@@ -19,61 +19,12 @@ export default function Assessment() {
   const [upcomingView, setUpcomingView] = useState(true);
   const [closedView, setClosedView] = useState(true);
   const [upcomingData, setUpcomingData] = useState([]);
-  const [closedData, setClosedData] = useState([
-    {
-      name: "DSA Quiz 1",
-      questionCount: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      subject: {
-        name: "DSA",
-        subjectId: "CS - 2011",
-      },
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questionCount: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      subject: {
-        name: "DSA",
-        subjectId: "CS - 2011",
-      },
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questionCount: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      subject: {
-        name: "DSA",
-        subjectId: "CS - 2011",
-      },
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questionCount: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      subject: {
-        name: "DSA",
-        subjectId: "CS - 2011",
-      },
-      semester: "4",
-    },
-  ]);
+  const [closedData, setClosedData] = useState([]);
 
   const getTestHandler = async () => {
     try {
       const response = await axios.get("http://localhost:3000/test");
-      // setUpcomingData(response.data);
+      console.log(response.data);
       setUpcomingData(response.data.open);
       setClosedData(response.data.closed);
     } catch (e) {
@@ -105,11 +56,14 @@ export default function Assessment() {
               />
             </div>
           </div>
-          {upcomingView && upcomingData && (
+          {upcomingView && (
             <div className={css.sectionDetails}>
-              {upcomingData.map((data, key) => {
-                return <AssessmentCard key={key} data={data} closed={false} />;
-              })}
+              {upcomingData.length > 0 &&
+                upcomingData.map((data, key) => {
+                  return (
+                    <AssessmentCard key={key} data={data} closed={false} />
+                  );
+                })}
               {authCtx.user.access == "Teacher" ? (
                 <div
                   className={css.addNew}
@@ -140,11 +94,12 @@ export default function Assessment() {
               />
             </div>
           </div>
-          {closedView && closedData && (
+          {closedView && (
             <div className={css.sectionDetails}>
-              {closedData.map((data, key) => {
-                return <AssessmentCard key={key} data={data} closed={true} />;
-              })}
+              {closedData.length > 0 &&
+                closedData.map((data, key) => {
+                  return <AssessmentCard key={key} data={data} closed={true} />;
+                })}
             </div>
           )}
         </div>

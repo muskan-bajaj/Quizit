@@ -7,6 +7,39 @@ export default function Settings({ data, setData }) {
     <div className={css.settingsScreen}>
       <div className={css.heading}>Test Setting</div>
       <div className={css.inputs}>
+        <label htmlFor="name">Test Name</label>
+        <input
+          type="text"
+          placeholder="Enter Test Name"
+          value={data.name}
+          onChange={(e) => {
+            setData({ ...data, name: e.target.value });
+          }}
+        />
+      </div>
+      <div className={css.inputs}>
+        <label htmlFor="subject">Subject Name</label>
+        <input
+          type="text"
+          placeholder="Enter Subject Name"
+          value={data.subject}
+          onChange={(e) => {
+            setData({ ...data, subject: e.target.value });
+          }}
+        />
+      </div>
+      <div className={css.inputs}>
+        <label htmlFor="semester">Semester</label>
+        <input
+          type="number"
+          placeholder="Enter Semester Number"
+          value={data.semester}
+          onChange={(e) => {
+            setData({ ...data, semester: e.target.value });
+          }}
+        />
+      </div>
+      <div className={css.inputs}>
         <label htmlFor="violations">Total Number of Violation Allowed</label>
         <input
           type="number"
@@ -90,14 +123,14 @@ export default function Settings({ data, setData }) {
         <textarea
           rows={10}
           placeholder="Enter CSV or Copy/paste Excel Column"
-          value={data.rollno}
+          value={data.student_list}
           onChange={(e) => {
-            setData({ ...data, rollno: e.target.value });
+            setData({ ...data, student_list: e.target.value });
           }}
         />
       </div>
       <div className={css.inputs}>
-        <label htmlFor="rollnos">Instructions</label>
+        <label htmlFor="instructions">Instructions</label>
         <textarea
           rows={10}
           placeholder="Enter Instruction"

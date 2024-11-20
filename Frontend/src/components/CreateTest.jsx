@@ -13,8 +13,11 @@ export default function CreateTest() {
     proctoring: true,
     start_time: "",
     end_time: "",
-    rollno: "",
+    student_list: "",
     instruction: "",
+    name: "",
+    subject: "",
+    semester: "",
   });
   const [questionData, setQuestionData] = useState([
     {
