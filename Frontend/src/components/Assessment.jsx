@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../store/AuthContext";
 
@@ -10,6 +10,7 @@ import arrowUp from "../assets/arrowUp.svg";
 import plus from "../assets/plus.svg";
 
 import css from "../css/Assessment.module.css";
+import axios from "axios";
 
 export default function Assessment() {
   const authCtx = useContext(AuthContext);
@@ -17,82 +18,23 @@ export default function Assessment() {
 
   const [upcomingView, setUpcomingView] = useState(true);
   const [closedView, setClosedView] = useState(true);
-  const [upcomingData, setUpcomingData] = useState([
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-  ]);
-  const [closedData, setClosedData] = useState([
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-    },
-  ]);
+  const [upcomingData, setUpcomingData] = useState([]);
+  const [closedData, setClosedData] = useState([]);
+
+  const getTestHandler = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/test");
+      console.log(response.data);
+      setUpcomingData(response.data.open);
+      setClosedData(response.data.closed);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    getTestHandler();
+  }, []);
 
   return (
     <div className="flexpage">
@@ -116,9 +58,12 @@ export default function Assessment() {
           </div>
           {upcomingView && (
             <div className={css.sectionDetails}>
-              {upcomingData.map((data, key) => {
-                return <AssessmentCard key={key} data={data} closed={false} />;
-              })}
+              {upcomingData.length > 0 &&
+                upcomingData.map((data, key) => {
+                  return (
+                    <AssessmentCard key={key} data={data} closed={false} />
+                  );
+                })}
               {authCtx.user.access == "Teacher" ? (
                 <div
                   className={css.addNew}
@@ -151,9 +96,10 @@ export default function Assessment() {
           </div>
           {closedView && (
             <div className={css.sectionDetails}>
-              {closedData.map((data, key) => {
-                return <AssessmentCard key={key} data={data} closed={true} />;
-              })}
+              {closedData.length > 0 &&
+                closedData.map((data, key) => {
+                  return <AssessmentCard key={key} data={data} closed={true} />;
+                })}
             </div>
           )}
         </div>

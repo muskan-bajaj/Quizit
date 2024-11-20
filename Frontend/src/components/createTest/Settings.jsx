@@ -7,13 +7,46 @@ export default function Settings({ data, setData }) {
     <div className={css.settingsScreen}>
       <div className={css.heading}>Test Setting</div>
       <div className={css.inputs}>
+        <label htmlFor="name">Test Name</label>
+        <input
+          type="text"
+          placeholder="Enter Test Name"
+          value={data.name}
+          onChange={(e) => {
+            setData({ ...data, name: e.target.value });
+          }}
+        />
+      </div>
+      <div className={css.inputs}>
+        <label htmlFor="subject">Subject Name</label>
+        <input
+          type="text"
+          placeholder="Enter Subject Name"
+          value={data.subject}
+          onChange={(e) => {
+            setData({ ...data, subject: e.target.value });
+          }}
+        />
+      </div>
+      <div className={css.inputs}>
+        <label htmlFor="semester">Semester</label>
+        <input
+          type="number"
+          placeholder="Enter Semester Number"
+          value={data.semester}
+          onChange={(e) => {
+            setData({ ...data, semester: e.target.value });
+          }}
+        />
+      </div>
+      <div className={css.inputs}>
         <label htmlFor="violations">Total Number of Violation Allowed</label>
         <input
           type="number"
           placeholder="Enter Count"
-          value={data.violation}
+          value={data.violation_count}
           onChange={(e) => {
-            setData({ ...data, violation: e.target.value });
+            setData({ ...data, violation_count: e.target.value });
           }}
         />
       </div>
@@ -31,9 +64,9 @@ export default function Settings({ data, setData }) {
       <div className={css.inputs}>
         <label htmlFor="shuffle">Shuffle Questions</label>
         <select
-          value={data.shuffle}
+          value={data.shuffle_questions}
           onChange={(e) => {
-            setData({ ...data, shuffle: e.target.value });
+            setData({ ...data, shuffle_questions: e.target.value });
           }}
         >
           <option value={true}>True</option>
@@ -43,9 +76,9 @@ export default function Settings({ data, setData }) {
       <div className={css.inputs}>
         <label htmlFor="proctor">Enable Proctoring</label>
         <select
-          value={data.proctor}
+          value={data.proctoring}
           onChange={(e) => {
-            setData({ ...data, proctor: e.target.value });
+            setData({ ...data, proctoring: e.target.value });
           }}
         >
           <option value={true}>True</option>
@@ -61,12 +94,12 @@ export default function Settings({ data, setData }) {
             onFocus={(e) => (e.target.type = "datetime-local")}
             onBlur={(e) => (e.target.type = "text")}
             value={
-              data.start
-                ? new Date(data.start).toISOString().substring(0, 16)
+              data.start_time
+                ? new Date(data.start_time).toISOString().substring(0, 16)
                 : ""
             }
             onChange={(e) => {
-              setData({ ...data, start: e.target.value });
+              setData({ ...data, start_time: e.target.value });
             }}
           />
           <input
@@ -75,10 +108,12 @@ export default function Settings({ data, setData }) {
             onFocus={(e) => (e.target.type = "datetime-local")}
             onBlur={(e) => (e.target.type = "text")}
             value={
-              data.end ? new Date(data.end).toISOString().substring(0, 16) : ""
+              data.end_time
+                ? new Date(data.end_time).toISOString().substring(0, 16)
+                : ""
             }
             onChange={(e) => {
-              setData({ ...data, end: e.target.value });
+              setData({ ...data, end_time: e.target.value });
             }}
           />
         </div>
@@ -88,20 +123,20 @@ export default function Settings({ data, setData }) {
         <textarea
           rows={10}
           placeholder="Enter CSV or Copy/paste Excel Column"
-          value={data.rollno}
+          value={data.student_list}
           onChange={(e) => {
-            setData({ ...data, rollno: e.target.value });
+            setData({ ...data, student_list: e.target.value });
           }}
         />
       </div>
       <div className={css.inputs}>
-        <label htmlFor="rollnos">Instructions</label>
+        <label htmlFor="instructions">Instructions</label>
         <textarea
           rows={10}
           placeholder="Enter Instruction"
-          value={data.instructions}
+          value={data.instruction}
           onChange={(e) => {
-            setData({ ...data, instructions: e.target.value });
+            setData({ ...data, instruction: e.target.value });
           }}
         />
       </div>

@@ -1,6 +1,7 @@
 // import React from "react";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import AuthContext from "../store/AuthContext";
 
 import logo from "../assets/KIITLogo.svg";
@@ -15,25 +16,32 @@ import publishIcon from "../assets/publishIcon.svg";
 import css from "../css/SideBar.module.css";
 
 export default function SideBar({
-  data,
   selected,
   setSelected,
   totalQuestions,
   setTotalQuestions,
+  questionData,
+  setQuestionData,
+  settingsData,
+  setSettingsData,
 }) {
   const redirect = useNavigate();
   const authCtx = useContext(AuthContext);
 
-  // const handleClick = (key) => {
-  //   setStates((prevStates) => {
-  //     if (prevStates[key]) return prevStates;
-  //     // Create a new state object with the clicked key set to true and others to false
-  //     return Object.keys(prevStates).reduce((acc, stateKey) => {
-  //       acc[stateKey] = stateKey === key; // set the clicked key to true, others to false
-  //       return acc;
-  //     }, {});
-  //   });
-  // };
+  const createTestHandler = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/test/create", {
+        setting: {
+          ...settingsData,
+          student_list: settingsData.student_list.split(","),
+        },
+        questions: questionData,
+      });
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <>
@@ -130,6 +138,16 @@ export default function SideBar({
             style={{ backgroundColor: "#4b515b" }}
             onClick={() => {
               setTotalQuestions(totalQuestions + 1);
+              setQuestionData([
+                ...questionData,
+                {
+                  marks_awarded: "",
+                  question: "",
+                  type: "long",
+                  answer: "",
+                  options: [],
+                },
+              ]);
             }}
           >
             <img src={plusBlack} />
@@ -138,8 +156,8 @@ export default function SideBar({
             className={css.navItems}
             style={{ backgroundColor: "#03C988" }}
             onClick={() => {
+              createTestHandler();
               confirm("Do you want to publish the test?");
-              console.log(data);
               redirect("/assessment");
             }}
           >

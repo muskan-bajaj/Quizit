@@ -22,7 +22,7 @@ const register = z.object({
 export function validateLogin(req: Request, res: Response, next: NextFunction) {
   try {
     req.body = login.parse(req.body);
-    next();
+    return next();
   } catch (err) {
     res.status(400).json(zodParse(err));
   }
@@ -35,16 +35,20 @@ export function validateProviderLogin(
 ) {
   try {
     req.body = providerLogin.parse(req.body);
-    next();
+    return next();
   } catch (err) {
     res.status(400).json(zodParse(err));
   }
 }
 
-export function validateRegister(req: Request, res: Response, next: NextFunction) {
+export function validateRegister(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     req.body = register.parse(req.body);
-    next();
+    return next();
   } catch (err) {
     res.status(400).json(zodParse(err));
   }
