@@ -488,7 +488,6 @@ export async function getTestReport(
     columns: {
       marksObtained: true,
       submittedAt: true,
-      AiExplanation: true,
     },
     with: {
       questionBank: {
@@ -497,6 +496,7 @@ export async function getTestReport(
           answer: true,
           type: true,
           marksAwarded: true,
+          AiExplanation: true,
         },
       },
     },

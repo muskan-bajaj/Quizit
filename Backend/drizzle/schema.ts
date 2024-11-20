@@ -61,6 +61,7 @@ export const questionBank = pgTable("questionBank", {
   type: qtype().notNull(),
   marksAwarded: integer("marks_awarded").default(1).notNull(),
   order: integer("insert_order").notNull(),
+  AiExplanation: text("ai_explanation"),
   tid: integer()
     .references(() => test.tid, { onDelete: "restrict", onUpdate: "cascade" })
     .notNull(),
@@ -89,7 +90,6 @@ export const submission = pgTable(
       withTimezone: true,
     }).notNull(),
     isAi: boolean("is_ai"),
-    AiExplanation: text("ai_explanation"),
     qid: integer()
       .references(() => questionBank.qid, {
         onDelete: "restrict",
