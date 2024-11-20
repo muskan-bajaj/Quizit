@@ -449,14 +449,12 @@ export async function submitQuestion(
         qid: question.qid,
         tmid: testManager.tmid,
         marksObtained: marksObtained as number,
-        AiExplanation: explanation as string,
         submittedAt: moment().format(),
       })
       .onConflictDoUpdate({
         target: [schema.submission.qid, schema.submission.tmid],
         set: {
           marksObtained: marksObtained as number,
-          AiExplanation: explanation as string,
           submittedAt: moment().format(),
         },
       });
@@ -488,7 +486,6 @@ export async function getTestReport(
     columns: {
       marksObtained: true,
       submittedAt: true,
-      AiExplanation: true,
     },
     with: {
       questionBank: {
@@ -497,6 +494,7 @@ export async function getTestReport(
           answer: true,
           type: true,
           marksAwarded: true,
+          AiExplanation: true,
         },
       },
     },
