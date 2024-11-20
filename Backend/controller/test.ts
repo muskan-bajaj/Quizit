@@ -449,14 +449,12 @@ export async function submitQuestion(
         qid: question.qid,
         tmid: testManager.tmid,
         marksObtained: marksObtained as number,
-        AiExplanation: explanation as string,
         submittedAt: moment().format(),
       })
       .onConflictDoUpdate({
         target: [schema.submission.qid, schema.submission.tmid],
         set: {
           marksObtained: marksObtained as number,
-          AiExplanation: explanation as string,
           submittedAt: moment().format(),
         },
       });
