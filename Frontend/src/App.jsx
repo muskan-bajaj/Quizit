@@ -94,7 +94,7 @@ function App() {
               }
             />
           )}
-          {isLoggedIn && authCtx.user.access == "Student" && (
+          {isLoggedIn && authCtx.user.access == "Teacher" && (
             <Route
               path="result/:id"
               element={
@@ -104,7 +104,7 @@ function App() {
               }
             />
           )}
-          {isLoggedIn && authCtx.user.access == "Teacher" && (
+          {isLoggedIn && authCtx.user.access == "Student" && (
             <Route
               path="submission/:id"
               element={

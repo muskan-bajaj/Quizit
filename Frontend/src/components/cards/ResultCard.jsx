@@ -51,28 +51,37 @@ export default function ResultCard({ data, declared }) {
         {new Date(data.start).toLocaleTimeString()} ({difference})
       </div>
       <div className={css.course}>
-        {/* {data.subject.name} ({data.subject.subjectId}) */}
+        {data.subject.name} ({data.subject.subjectId})
       </div>
       <div className={css.semester}>{data.semester}th Semester</div>
       <div className={css.studentButton}>
         {declared ? (
-          <>
-            <button className={css.score}>
-              {data.score}/{data.total}
-            </button>
-            <button
-              className={css.report}
-              onClick={() => {
-                if (authCtx.user.access == "Student") {
+          authCtx.user.access == "Student" ? (
+            <>
+              <button className={css.score}>
+                {data.score}/{data.total}
+              </button>
+              <button
+                className={css.report}
+                onClick={() => {
+                  redirect(`/submission/${data.tid}`);
+                }}
+              >
+                Show Report
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className={css.report}
+                onClick={() => {
                   redirect(`/result/${data.tid}`);
-                } else {
-                  redirect(`/submission/31`);
-                }
-              }}
-            >
-              Show Report
-            </button>
-          </>
+                }}
+              >
+                Analyse
+              </button>
+            </>
+          )
         ) : (
           <button className={css.pending}>Pending</button>
         )}

@@ -35,15 +35,7 @@ router.post(
 
 router.get("/details", controller.test.getTestDetails);
 router.get("/", controller.test.getTest);
-router.get(
-  "/report",
-  middleware.check.has_role(["Student"]),
-  controller.test.getTestReport
-);
-router.get(
-  "/report/list",
-  middleware.check.has_role(["Student"]),
-  controller.test.getTestReportList
-);
+router.get("/report", controller.test.getTestReport);
+router.get("/report/list", controller.test.getTestReportList);
 
 export default router;

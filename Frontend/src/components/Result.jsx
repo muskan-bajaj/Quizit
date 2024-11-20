@@ -16,10 +16,12 @@ export default function Result() {
 
   const getTestHandler = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/test");
+      const response = await axios.get(
+        "http://localhost:3000/test/report/list"
+      );
       console.log(response.data);
-      setDeclaredData(response.data.open);
-      setUndeclaredData(response.data.closed);
+      setDeclaredData(response.data.published);
+      setUndeclaredData(response.data.pending);
     } catch (e) {
       console.log(e);
     }

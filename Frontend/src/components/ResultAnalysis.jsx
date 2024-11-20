@@ -17,9 +17,9 @@ export default function ResultAnalysis() {
       const response = await axios.get(
         `http://localhost:3000/test/report?tid=${id}`
       );
-      setData(response.data);
-      setQuestionBank(response.data.questionBanks);
-      console.log(questionBank);
+      setData({ questionCount: response.data.submission.length });
+      setQuestionBank(response.data.submission);
+      // console.log(questionBank);
     } catch (e) {
       console.log(e);
     }
