@@ -5,7 +5,7 @@ import { getDbInstance } from "../drizzle/db";
 import { inArray, and, eq, sql, lt, notExists, or, SQL } from "drizzle-orm";
 import { report } from "process";
 import moment from "moment-timezone";
-import { object } from "zod";
+import { number, object } from "zod";
 import {
   InvalidUserException,
   InvalidDataException,
@@ -88,7 +88,7 @@ export async function createTest(
         end: moment(rawData.setting.end_time).format(),
         suffle: rawData.setting.shuffle_questions,
         proctoring: rawData.setting.proctoring,
-        navigation: rawData.setting.allow_navigation,
+        navigation: false,
         createdBy: req.locals.user.uid,
       })
       .returning();
@@ -296,10 +296,22 @@ export async function getTestDetails(
       .sort(() => 0.5 - Math.random())
       .slice(0, testManager.test.questionCount - submissions.length);
 
-    res.json({
+    var data = {
       ...testManager.test,
       questionBanks: shuffled,
+    };
+
+    //process the data
+    var deepcopy = JSON.parse(JSON.stringify(data));
+    deepcopy.questionBanks.map((question: { type: string; options: any[] }) => {
+      if (question.type === "choice") {
+        question.options = question.options.map((option) => {
+          return option.option;
+        });
+      }
     });
+
+    res.json(deepcopy);
   } catch (error: any) {
     logger.error(error);
     res.status(500).json(error.message);
@@ -396,29 +408,22 @@ export async function submitQuestion(
     return next(new InvalidDataException("Question not found"));
   }
 
-  if (question.type === "choice" && !req.body.selected) {
-    next(new ValidationError("selected needed for choice question"));
-  }
-
-  if (question.type === "long" && !req.body.answer) {
-    next(new ValidationError("answer needed for long question"));
-  }
-
   if (question.type === "choice") {
     var correctAns = 0;
     var correctOptions = 0;
     question.options.every((option) => {
       if (option.correct) {
-        if (req.body.selected.some((e: any) => e == option.oid)) {
+        if (req.body.answer.some((e: any) => e == option.option)) {
           correctAns += 1;
         }
         correctOptions += 1;
       }
       return true;
     });
-
+    const numberAnsweredButWrong = req.body.answer.length - correctAns;
     const markAwarded = roundHalf(
-      (correctAns / correctOptions) * question.marksAwarded
+      ((correctAns - numberAnsweredButWrong / 3) / correctOptions) *
+        question.marksAwarded
     );
 
     await db
@@ -437,22 +442,74 @@ export async function submitQuestion(
         },
       });
   } else {
-    var marksObtained = getMarksFromAI(req.body);
+    var [marksObtained, explanation] = getMarksFromAI(req.body);
     await db
       .insert(schema.submission)
       .values({
         qid: question.qid,
         tmid: testManager.tmid,
-        marksObtained: marksObtained,
+        marksObtained: marksObtained as number,
+        AiExplanation: explanation as string,
         submittedAt: moment().format(),
       })
       .onConflictDoUpdate({
         target: [schema.submission.qid, schema.submission.tmid],
         set: {
-          marksObtained: 0,
+          marksObtained: marksObtained as number,
+          AiExplanation: explanation as string,
           submittedAt: moment().format(),
         },
       });
   }
   res.sendStatus(200);
+}
+
+export async function getTestReport(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const testManager = await db.query.testManager.findFirst({
+    where: and(
+      eq(schema.testManager.uid, req.locals.user.uid),
+      eq(schema.testManager.tid, Number(req.query.tid))
+    ),
+    with: {
+      test: true,
+    },
+  });
+
+  if (!testManager) {
+    return next(new InvalidDataException("Test not found"));
+  }
+
+  const submissions = await db.query.submission.findMany({
+    where: eq(schema.submission.tmid, testManager.tmid),
+    columns: {
+      marksObtained: true,
+      submittedAt: true,
+      AiExplanation: true,
+    },
+    with: {
+      questionBank: {
+        columns: {
+          question: true,
+          answer: true,
+          type: true,
+          marksAwarded: true,
+        },
+      },
+    },
+  });
+
+  //process data
+  const report = submissions.map((submission) => {
+    return {
+      ...submission,
+      ...submission.questionBank,
+      questionBank: undefined,
+    };
+  });
+
+  res.json(report);
 }

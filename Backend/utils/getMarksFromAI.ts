@@ -1,3 +1,3 @@
 export const getMarksFromAI = (submission: any) => {
-  return 0;
+  return [0, ""];
 };
