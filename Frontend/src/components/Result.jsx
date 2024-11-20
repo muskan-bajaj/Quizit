@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import SideBar from "./SideBar";
 import arrow from "../assets/arrow.svg";
@@ -6,102 +6,28 @@ import arrowUp from "../assets/arrowUp.svg";
 import ResultCard from "./cards/ResultCard";
 
 import css from "../css/Result.module.css";
+import axios from "axios";
 
 export default function Result() {
   const [declaredView, setDeclaredView] = useState(true);
   const [pendingView, setPendingView] = useState(true);
-  const [declaredData, setDeclaredData] = useState([
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-      score: "8",
-      total: "10",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-      score: "8",
-      total: "10",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-      score: "8",
-      total: "10",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-      score: "8",
-      total: "10",
-    },
-  ]);
-  const [undeclaredData, setUndeclaredData] = useState([
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-      score: "8",
-      total: "10",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-      score: "8",
-      total: "10",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-      score: "8",
-      total: "10",
-    },
-    {
-      name: "DSA Quiz 1",
-      questions: "10",
-      date: "28 Aug 2024",
-      time: "12:00 AM",
-      duration: "45 minutes",
-      course: "DSA - CS2001",
-      semester: "4",
-      score: "8",
-      total: "10",
-    },
-  ]);
+  const [declaredData, setDeclaredData] = useState();
+  const [undeclaredData, setUndeclaredData] = useState();
+
+  const getTestHandler = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/test");
+      console.log(response.data);
+      setDeclaredData(response.data.open);
+      setUndeclaredData(response.data.closed);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    getTestHandler();
+  }, []);
 
   return (
     <div className="flexpage">
@@ -125,9 +51,10 @@ export default function Result() {
           </div>
           {declaredView && (
             <div className={css.sectionDetails}>
-              {declaredData.map((data, key) => {
-                return <ResultCard key={key} data={data} declared={true} />;
-              })}
+              {declaredData &&
+                declaredData.map((data, key) => {
+                  return <ResultCard key={key} data={data} declared={true} />;
+                })}
             </div>
           )}
         </div>
@@ -148,9 +75,10 @@ export default function Result() {
           </div>
           {pendingView && (
             <div className={css.sectionDetails}>
-              {undeclaredData.map((data, key) => {
-                return <ResultCard key={key} data={data} declared={false} />;
-              })}
+              {undeclaredData &&
+                undeclaredData.map((data, key) => {
+                  return <ResultCard key={key} data={data} declared={false} />;
+                })}
             </div>
           )}
         </div>
