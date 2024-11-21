@@ -34,6 +34,8 @@ export default function SideBar({
         setting: {
           ...settingsData,
           student_list: settingsData.student_list.split(","),
+          question_count: settingsData.totalQuestions,
+          totalQuestions: undefined,
         },
         questions: questionData,
       });
@@ -157,8 +159,6 @@ export default function SideBar({
             style={{ backgroundColor: "#03C988" }}
             onClick={() => {
               createTestHandler();
-              confirm("Do you want to publish the test?");
-              redirect("/assessment");
             }}
           >
             <img src={publishIcon} />

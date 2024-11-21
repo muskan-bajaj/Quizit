@@ -1,7 +1,7 @@
 // import React from "react";
 
 import css from "../../css/Settings.module.css";
-
+import moment from "moment-timezone";
 export default function Settings({ data, setData }) {
   return (
     <div className={css.settingsScreen}>
@@ -95,11 +95,11 @@ export default function Settings({ data, setData }) {
             onBlur={(e) => (e.target.type = "text")}
             value={
               data.start_time
-                ? new Date(data.start_time).toISOString().substring(0, 16)
+                ? moment(data.start_time).format("yyyy-MM-DD hh:mm")
                 : ""
             }
             onChange={(e) => {
-              setData({ ...data, start_time: e.target.value });
+              setData({ ...data, start_time: moment(e.target.value).format() });
             }}
           />
           <input
@@ -109,11 +109,11 @@ export default function Settings({ data, setData }) {
             onBlur={(e) => (e.target.type = "text")}
             value={
               data.end_time
-                ? new Date(data.end_time).toISOString().substring(0, 16)
+                ? moment(data.end_time).format("yyyy-MM-DD hh:mm")
                 : ""
             }
             onChange={(e) => {
-              setData({ ...data, end_time: e.target.value });
+              setData({ ...data, end_time: moment(e.target.value).format() });
             }}
           />
         </div>

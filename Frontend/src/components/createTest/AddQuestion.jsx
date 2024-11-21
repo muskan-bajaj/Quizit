@@ -11,6 +11,7 @@ export default function AddQuestion({ questionNo, data, setData }) {
   const [checked, setChecked] = useState([false]);
   const [options, setOptions] = useState(1);
 
+  console.log(data);
   useEffect(() => {
     setData((prevData) =>
       prevData.map((item, index) =>
@@ -74,7 +75,7 @@ export default function AddQuestion({ questionNo, data, setData }) {
             placeholder="Enter  Correct Answer"
             value={currentData.answer}
             onChange={(e) => {
-              setCurrentData({ ...currentData, answer: e.target.value });
+              setCurrentData({ ...currentData, answer: [e.target.value] });
             }}
           />
         </div>
