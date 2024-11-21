@@ -1,0 +1,17 @@
+.ProfileBox {
+  width: 100%;
+  padding: 55px 35px;
+  overflow-y: scroll;
+}
+
+.heading {
+  font-size: 35px;
+}
+
+.details {
+  font-size: 25px;
+}
+
+.details span {
+  font-size: 18px;
+}
