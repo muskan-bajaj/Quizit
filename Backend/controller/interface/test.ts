@@ -21,8 +21,8 @@ export interface Question {
   type: "choice" | "long" | "file";
   marks_awarded: number;
   question: string;
-  options?: Option[]; // Only for choice type questions
-  answer?: string; // Only for long type questions
+  options?: string[]; // Only for choice type questions
+  answer?: string[]; // Only for long type questions
 }
 
 export interface QuizRequestBody {

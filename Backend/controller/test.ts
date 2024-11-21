@@ -69,6 +69,7 @@ export async function createTest(
 ) {
   const rawData: types.QuizRequestBody = req.body;
 
+  logger.log(req.body);
   const student_list = rawData.setting.student_list;
   const student_list_db = await db
     .select({ uid: schema.user.uid, rollno: schema.user.rollno })
@@ -119,8 +120,8 @@ export async function createTest(
         rawData.questions.map((question, index) => {
           return {
             question: question.question,
-            answer: question.answer,
             type: question.type,
+            answer: question.type == "long" ? question.answer![0] : null,
             marksAwarded: question.marks_awarded,
             tid: test[0].tid,
             order: index + 1, // Adding the order property
@@ -134,12 +135,13 @@ export async function createTest(
 
     var optionData = questions
       .map((question, index) => {
+        var answers = rawData.questions[question.order - 1].answer;
         if (rawData.questions[question.order - 1].type === "choice") {
           return rawData.questions[question.order - 1].options?.map(
             (option) => {
               return {
-                option: option.option,
-                correct: option.correct,
+                option: option,
+                correct: answers!.some((e: any) => e == option),
                 qid: question.qid,
               };
             }
@@ -149,12 +151,11 @@ export async function createTest(
       .filter((option) => option)
       .flat();
 
+    logger.log(optionData);
     var options = await trx
       .insert(schema.option)
       .values(
-        optionData.filter(
-          (option): option is NonNullable<typeof option> => option !== undefined
-        )
+        optionData as { qid: number; option: string; correct: boolean }[]
       );
 
     //mapp test to student
@@ -423,16 +424,7 @@ export async function submitQuestion(
       options: true,
     },
   });
-
-  logger.log(moment(testManager!.test.end), moment());
-  if (
-    !(
-      question &&
-      testManager &&
-      !testManager.endedAt &&
-      moment(testManager.test.end) > moment()
-    )
-  ) {
+  if (!(question && testManager && !testManager.endedAt)) {
     return next(new InvalidDataException("Question not found"));
   }
 

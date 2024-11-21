@@ -39,6 +39,7 @@ export function exceptionHandler(
     return;
   }
   if (err instanceof ValidationError) {
+    console.log(JSON.parse(err.message));
     res.status(422).json(JSON.parse(err.message));
     return;
   }

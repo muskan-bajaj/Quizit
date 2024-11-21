@@ -24,10 +24,8 @@ export const newTestSchema = z.object({
         type: z.enum(["choice", "long", "file"]),
         marks_awarded: z.coerce.number(),
         question: z.string(),
-        options: z
-          .array(z.object({ option: z.string(), correct: z.coerce.boolean() }))
-          .optional(),
-        answer: z.string().optional(),
+        options: z.array(z.string()),
+        answer: z.array(z.string()),
       })
     )
     .min(1),
@@ -40,11 +38,12 @@ export const controlTestSchema = z.object({
 export const submitQuestionSchema = z.object({
   tid: z.coerce.number(),
   qid: z.coerce.number(),
-  answer: z.array(z.string()).min(1),
+  answer: z.array(z.string()),
 });
 
 export function newTest(req: Request, res: Response, next: NextFunction) {
   try {
+    console.log(req.body);
     var validatedData = newTestSchema.parse(req.body);
     req.body = validatedData;
     return next();
