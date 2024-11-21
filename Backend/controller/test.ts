@@ -5,6 +5,13 @@ import { getDbInstance } from "../drizzle/db";
 import { inArray, and, eq, sql, lt, notExists, or, SQL } from "drizzle-orm";
 import { report } from "process";
 import moment from "moment";
+import { CustomLogger } from "../logger";
+import {
+  DataAleadryExistsException,
+  InvalidDataException,
+  InvalidUserException,
+} from "../customException";
+import { getMarksFromAI } from "../utils/getMarksFromAI";
 
 const logger = new CustomLogger();
 const db = getDbInstance();
