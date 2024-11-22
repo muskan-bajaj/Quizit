@@ -5,7 +5,7 @@ import AddQuestion from "./createTest/AddQuestion";
 
 export default function CreateTest() {
   const [selected, setSelected] = useState(0);
-  const [totalQuestions, setTotalQuestions] = useState(1);
+  const [totalQuestions, setTotalQuestions] = useState(2);
   const [settingsData, setSettingsData] = useState({
     violation_count: "",
     totalQuestions: "",
@@ -19,7 +19,15 @@ export default function CreateTest() {
     subject: "",
     semester: "",
   });
-  const [questionData, setQuestionData] = useState([]);
+  const [questionData, setQuestionData] = useState([
+    {
+      marks_awarded: "",
+      question: "",
+      type: "long",
+      answer: "",
+      options: [],
+    },
+  ]);
 
   return (
     <div className="flexpage">

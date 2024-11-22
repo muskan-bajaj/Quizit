@@ -35,7 +35,6 @@ export default function SideBar({
           ...settingsData,
           student_list: settingsData.student_list.split(","),
           question_count: settingsData.totalQuestions,
-          totalQuestions: undefined,
         },
         questions: questionData,
       });
