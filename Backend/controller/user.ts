@@ -94,7 +94,7 @@ export async function register(
   }
   var is_teacher = isNaN(Number(data.email.split("@")[0]));
   if (!is_teacher && data.rollno !== Number(data.email.split("@")[0])) {
-    next(new InvalidDataException("Rollno and email should not be different"));
+    next(new InvalidDataException("Rollno and email should be same"));
     return;
   }
   var is_duplicate = await db.$count(
@@ -128,7 +128,7 @@ export async function register(
   mailer.sendMail(
     [data.email],
     "Welcome to Quizit",
-    `Your password is ${password}`
+    `Hi, ${data.email} Your password is ${password}`
   );
   res.json({ uid: user[0].uid });
 }

@@ -92,6 +92,7 @@ export async function createTest(
       )
     );
   }
+  logger.log(rawData);
   // Raw Data into db
   await db.transaction(async (trx) => {
     var test = await trx
@@ -149,11 +150,13 @@ export async function createTest(
       .filter((option) => option)
       .flat();
 
-    var options = await trx
-      .insert(schema.option)
-      .values(
-        optionData as { qid: number; option: string; correct: boolean }[]
-      );
+    var options =
+      optionData.length !== 0 &&
+      (await trx
+        .insert(schema.option)
+        .values(
+          optionData as { qid: number; option: string; correct: boolean }[]
+        ));
 
     //mapp test to student
     var mappingData = student_list_db.map((student) => {

@@ -1,6 +1,8 @@
 import React, { Suspense, useContext } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import { useParams } from "react-router-dom";
 
 import AuthContext from "./store/AuthContext";
@@ -24,6 +26,19 @@ function App() {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   const authCtx = useContext(AuthContext);
   axios.defaults.withCredentials = true;
+  axios.interceptors.response.use(
+    (response) => response, // Pass through successful responses
+    (error) => {
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data);
+      } else if (error.response && error.response.status === 422) {
+        toast.error("Invalid or Wrong Question");
+      } else {
+        toast.error("Something went wrong");
+      }
+      Promise.reject(error);
+    }
+  );
   return (
     <>
       <BrowserRouter>
@@ -116,6 +131,7 @@ function App() {
           )}
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </>
   );
 }

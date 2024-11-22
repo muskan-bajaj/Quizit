@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-
+import React, { useState, useMemo, useEffect } from "react";
+import axios from "axios";
 const AuthContext = React.createContext({
   isLoggedIn: false,
   user: {
@@ -15,6 +15,21 @@ const AuthContext = React.createContext({
 export const AuthContextProvider = (props) => {
   const [user, setUser] = useState({});
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
+  const verifyLogIn = () => {
+    axios
+      .get("http://localhost:3000/auth/validate", { withCredentials: true })
+      .then((response) => {
+        if (response.status == 200) {
+          setUser({
+            name: response.data.name,
+            email: response.data.email,
+            rollNo: response.data.rollno,
+            access: response.data.role,
+          });
+          setUserIsLoggedIn(true);
+        }
+      });
+  };
 
   const loginHandler = (name, email, rollno, access) => {
     setUser({
@@ -43,6 +58,9 @@ export const AuthContextProvider = (props) => {
     [userIsLoggedIn, user]
   );
 
+  useEffect(() => {
+    verifyLogIn();
+  }, []);
   return (
     <AuthContext.Provider value={contextValue}>
       {props.children}
