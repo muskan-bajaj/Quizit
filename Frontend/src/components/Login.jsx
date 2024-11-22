@@ -7,6 +7,7 @@ import axios from "axios";
 import AuthContext from "../store/AuthContext";
 
 import css from "../css/Login.module.css";
+import Loading from "../Loading";
 
 export default function Login() {
   const authCtx = useContext(AuthContext);
@@ -14,11 +15,14 @@ export default function Login() {
 
   const [login, setLogin] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    setLoading(true);
     setError("");
     if (login.email === "" || login.password === "") {
       setError("Fill all the required fields");
+      setLoading(false);
       return;
     }
     try {
@@ -34,51 +38,59 @@ export default function Login() {
       );
       setError("");
       redirect("/profile");
+      setLoading(false);
     } catch (err) {
       setError(err.response.data.error);
+      setLoading(false);
     }
   };
 
   return (
-    <div className={css.loginBox}>
-      <div className={css.inputBox}>
-        <div className={css.heading}>QuizIt Login</div>
-        <input
-          className={css.input}
-          type="text"
-          placeholder="Enter Email*"
-          value={login.email}
-          onChange={(e) => {
-            setLogin({ ...login, email: e.target.value });
-          }}
-        />
-        <input
-          className={css.input}
-          type="password"
-          placeholder="Enter Password*"
-          value={login.password}
-          onChange={(e) => {
-            setLogin({ ...login, password: e.target.value });
-          }}
-        />
-        {error && <div className="errorHandling">{error}</div>}
-        <span className={css.forgotPassword}>Forgot Password?</span>
-        <div className={css.buttonDiv}>
-          <button className={css.login} onClick={handleLogin}>
-            Login
-          </button>
+    <>
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className={css.loginBox}>
+          <div className={css.inputBox}>
+            <div className={css.heading}>QuizIt Login</div>
+            <input
+              className={css.input}
+              type="text"
+              placeholder="Enter Email*"
+              value={login.email}
+              onChange={(e) => {
+                setLogin({ ...login, email: e.target.value });
+              }}
+            />
+            <input
+              className={css.input}
+              type="password"
+              placeholder="Enter Password*"
+              value={login.password}
+              onChange={(e) => {
+                setLogin({ ...login, password: e.target.value });
+              }}
+            />
+            {error && <div className="errorHandling">{error}</div>}
+            <span className={css.forgotPassword}>Forgot Password?</span>
+            <div className={css.buttonDiv}>
+              <button className={css.login} onClick={handleLogin}>
+                Login
+              </button>
+            </div>
+            <div className={css.register}>
+              New User?{" "}
+              <span
+                onClick={() => {
+                  redirect("/signup");
+                }}
+              >
+                Register Now.
+              </span>
+            </div>
+          </div>
         </div>
-        <div className={css.register}>
-          New User?{" "}
-          <span
-            onClick={() => {
-              redirect("/signup");
-            }}
-          >
-            Register Now.
-          </span>
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

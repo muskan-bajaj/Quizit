@@ -5,7 +5,8 @@ import AddQuestion from "./createTest/AddQuestion";
 
 export default function CreateTest() {
   const [selected, setSelected] = useState(0);
-  const [totalQuestions, setTotalQuestions] = useState(1);
+  const [options, setOptions] = useState(1);
+  const [checked, setChecked] = useState([false]);
   const [settingsData, setSettingsData] = useState({
     violation_count: "",
     totalQuestions: "",
@@ -19,29 +20,52 @@ export default function CreateTest() {
     subject: "",
     semester: "",
   });
-  const [questionData, setQuestionData] = useState([]);
+  const [questionData, setQuestionData] = useState([
+    {
+      marks_awarded: "",
+      question: "",
+      type: "long",
+      answer: "",
+      options: [],
+    },
+  ]);
 
   return (
     <div className="flexpage">
       <SideBar
         selected={selected}
         setSelected={setSelected}
-        totalQuestions={totalQuestions}
-        setTotalQuestions={setTotalQuestions}
         questionData={questionData}
         setQuestionData={setQuestionData}
         settingsData={settingsData}
         setSettingsData={setSettingsData}
       />
-      {selected == 0 ? (
+      {selected == 0 && (
+        <Settings data={settingsData} setData={setSettingsData} />
+      )}
+      {selected != 0 && (
+        <AddQuestion
+          questionNo={selected}
+          setSelected={setSelected}
+          currentData={questionData[selected - 1]}
+          data={questionData}
+          setData={setQuestionData}
+          options={options}
+          setOptions={setOptions}
+          checked={checked}
+          setChecked={setChecked}
+        />
+      )}
+      {/* {selected == 0 ? (
         <Settings data={settingsData} setData={setSettingsData} s />
       ) : (
         <AddQuestion
           questionNo={selected}
+          setSelected={setSelected}
           data={questionData}
           setData={setQuestionData}
         />
-      )}
+      )} */}
     </div>
   );
 }

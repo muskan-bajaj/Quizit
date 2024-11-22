@@ -4,16 +4,13 @@ import * as schema from "../drizzle/schema";
 import { getDbInstance } from "../drizzle/db";
 import { inArray, and, eq, sql, lt, notExists, or, SQL } from "drizzle-orm";
 import { report } from "process";
-import moment from "moment-timezone";
-import { number, object } from "zod";
-import {
-  InvalidUserException,
-  InvalidDataException,
-  DataAleadryExistsException,
-  ValidationError,
-} from "../customException";
+import moment from "moment";
 import { CustomLogger } from "../logger";
-import { submitQuestionSchema } from "../validators/test";
+import {
+  DataAleadryExistsException,
+  InvalidDataException,
+  InvalidUserException,
+} from "../customException";
 import { getMarksFromAI } from "../utils/getMarksFromAI";
 import { Mailer } from "../utils/mailer";
 

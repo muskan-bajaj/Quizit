@@ -4,9 +4,25 @@
   overflow-y: scroll;
 }
 
+.top {
+  display: flex;
+  justify-content: space-between;
+}
+
 .heading {
   font-size: 35px;
   padding-bottom: 30px;
+}
+
+.delete {
+  display: flex;
+  gap: 10px;
+  color: red;
+  cursor: pointer;
+}
+
+.delete:hover {
+  text-decoration: underline;
 }
 
 .inputs {
