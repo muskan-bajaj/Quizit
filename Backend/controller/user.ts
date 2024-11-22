@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import * as type from "./interface/auth";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -7,11 +7,15 @@ import { getDbInstance } from "../drizzle/db";
 import * as schema from "../drizzle/schema";
 import { eq, or } from "drizzle-orm";
 import { CustomLogger } from "../logger";
-
+import { Mailer } from "../utils/mailer";
+import { Mnemonic } from "../utils/mnemonic";
+import { InvalidDataException } from "../customException";
 const logger = new CustomLogger();
 const config = ConfigSingleton.getInstance();
 const db = getDbInstance();
 const prod = (process.env.NODE_ENV ?? "dev") == "prod";
+const mailer = Mailer.getInstance();
+const mnemonic = new Mnemonic(32);
 
 export async function login(req: Request, res: Response) {
   const data: type.login = req.body;
@@ -70,7 +74,11 @@ export async function providerLogin(req: Request, res: Response) {
   logger.log(req.body);
 }
 
-export async function register(req: Request, res: Response) {
+export async function register(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const data: type.register = req.body;
 
   var email_domain = data.email.split("@")[1];
@@ -84,7 +92,11 @@ export async function register(req: Request, res: Response) {
     res.status(400).json({ error: "Email domain not allowed" });
     return;
   }
-
+  var is_teacher = isNaN(Number(data.email.split("@")[0]));
+  if (!is_teacher && data.rollno !== Number(data.email.split("@")[0])) {
+    next(new InvalidDataException("Rollno and email should not be different"));
+    return;
+  }
   var is_duplicate = await db.$count(
     schema.user,
     or(
@@ -98,7 +110,8 @@ export async function register(req: Request, res: Response) {
   }
 
   var salt = bcrypt.genSaltSync(10);
-  var hash = bcrypt.hashSync(data.password, salt);
+  const password = mnemonic.toWords().join("");
+  var hash = bcrypt.hashSync(password, salt);
   var user = await db
     .insert(schema.user)
     .values({
@@ -108,9 +121,15 @@ export async function register(req: Request, res: Response) {
       rollno: data.rollno,
       salt: salt,
       provider: "Email",
+      role: is_teacher ? "Teacher" : "Student",
     })
     .returning();
 
+  mailer.sendMail(
+    [data.email],
+    "Welcome to Quizit",
+    `Your password is ${password}`
+  );
   res.json({ uid: user[0].uid });
 }
 

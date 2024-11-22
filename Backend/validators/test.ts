@@ -43,7 +43,6 @@ export const submitQuestionSchema = z.object({
 
 export function newTest(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log(req.body);
     var validatedData = newTestSchema.parse(req.body);
     req.body = validatedData;
     return next();

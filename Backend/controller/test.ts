@@ -15,8 +15,10 @@ import {
 import { CustomLogger } from "../logger";
 import { submitQuestionSchema } from "../validators/test";
 import { getMarksFromAI } from "../utils/getMarksFromAI";
+import { Mailer } from "../utils/mailer";
 
 const logger = new CustomLogger();
+const mailer = Mailer.getInstance();
 const db = getDbInstance();
 function roundHalf(num: number) {
   return Math.ceil(num * 2) / 2;
@@ -69,7 +71,6 @@ export async function createTest(
 ) {
   const rawData: types.QuizRequestBody = req.body;
 
-  logger.log(req.body);
   const student_list = rawData.setting.student_list;
   const student_list_db = await db
     .select({ uid: schema.user.uid, rollno: schema.user.rollno })
@@ -151,7 +152,6 @@ export async function createTest(
       .filter((option) => option)
       .flat();
 
-    logger.log(optionData);
     var options = await trx
       .insert(schema.option)
       .values(
@@ -170,6 +170,10 @@ export async function createTest(
       .insert(schema.testManager)
       .values(mappingData)
       .returning();
+
+    //send mail to student
+    var roll_list: number[] = student_list_db.map((student) => student.rollno);
+    mailer.sendToRoll(roll_list, "New Test", "A new test has been created");
   });
   res.sendStatus(200);
 }

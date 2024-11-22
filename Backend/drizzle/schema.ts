@@ -168,7 +168,7 @@ export const user = pgTable(
     username: text(),
     role: role().default("Student").notNull(),
     name: text().notNull(),
-    rollno: integer(),
+    rollno: integer().notNull(),
   },
   (table) => {
     return {
