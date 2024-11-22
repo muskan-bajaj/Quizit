@@ -3,26 +3,56 @@ import { useEffect, useState } from "react";
 import Options from "./Options";
 
 import plus from "../../assets/plusCircle.svg";
+import deleteIcon from "../../assets/deleteIcon.svg";
 
 import css from "../../css/AddQuestion.module.css";
 
-export default function AddQuestion({ questionNo, data, setData }) {
-  const [currentData, setCurrentData] = useState(data[questionNo - 1]);
-  const [checked, setChecked] = useState([false]);
-  const [options, setOptions] = useState(1);
+export default function AddQuestion({
+  questionNo,
+  setSelected,
+  currentData,
+  data,
+  setData,
+  // options,
+  // setOptions,
+  // checked,
+  // setChecked,
+}) {
+  // const [currentData, setCurrentData] = useState(data);
+  const [checked, setChecked] = useState([[false]]);
+  const [options, setOptions] = useState([[1]]);
+  const [test, setTest] = useState([1]);
 
-  console.log(data);
+  // useEffect(() => {
+  //   setData((prevData) =>
+  //     prevData.map((item, index) =>
+  //       index === questionNo - 1 ? currentData : item
+  //     )
+  //   );
+  // }, [currentData]);
+
   useEffect(() => {
-    setData((prevData) =>
-      prevData.map((item, index) =>
-        index === questionNo - 1 ? currentData : item
-      )
-    );
-  }, [currentData]);
+    console.log(options);
+    console.log("lorem");
+    console.log(options[questionNo - 1]);
+  }, [options]);
+
+  const deleteQuestionHandler = () => {
+    setData(data.filter((_, i) => i !== questionNo - 1));
+    setSelected(1);
+  };
 
   return (
     <div className={css.addQuestionScreen}>
-      <div className={css.heading}>Question {questionNo}</div>
+      <div className={css.top}>
+        <div className={css.heading}>Question {questionNo}</div>
+        {data.length > 1 && (
+          <div className={css.delete} onClick={() => deleteQuestionHandler()}>
+            <img src={deleteIcon} alt="" height={18} />
+            <span>Delete Question</span>
+          </div>
+        )}
+      </div>
       <div className={css.inputs}>
         <label htmlFor="marks">Total Marks To Award</label>
         <input
@@ -31,7 +61,13 @@ export default function AddQuestion({ questionNo, data, setData }) {
           value={currentData.marks_awarded}
           id="marks"
           onChange={(e) => {
-            setCurrentData({ ...currentData, marks_awarded: e.target.value });
+            setData((prevData) =>
+              prevData.map((item, index) =>
+                index === questionNo - 1
+                  ? { ...item, marks_awarded: e.target.value }
+                  : item
+              )
+            );
           }}
         />
       </div>
@@ -43,10 +79,13 @@ export default function AddQuestion({ questionNo, data, setData }) {
           placeholder="Enter Question and related instructions"
           value={currentData.question}
           onChange={(e) => {
-            setCurrentData({
-              ...currentData,
-              question: e.target.value,
-            });
+            setData((prevData) =>
+              prevData.map((item, index) =>
+                index === questionNo - 1
+                  ? { ...item, question: e.target.value }
+                  : item
+              )
+            );
           }}
         />
       </div>
@@ -56,10 +95,13 @@ export default function AddQuestion({ questionNo, data, setData }) {
           value={currentData.type}
           id="type"
           onChange={(e) => {
-            setCurrentData({
-              ...currentData,
-              type: e.target.value,
-            });
+            setData((prevData) =>
+              prevData.map((item, index) =>
+                index === questionNo - 1
+                  ? { ...item, type: e.target.value }
+                  : item
+              )
+            );
           }}
         >
           <option value="long">Subjective</option>
@@ -75,37 +117,57 @@ export default function AddQuestion({ questionNo, data, setData }) {
             placeholder="Enter  Correct Answer"
             value={currentData.answer}
             onChange={(e) => {
-              setCurrentData({ ...currentData, answer: [e.target.value] });
+              setData((prevData) =>
+                prevData.map((item, index) =>
+                  index === questionNo - 1
+                    ? { ...item, answer: [e.target.value] }
+                    : item
+                )
+              );
             }}
           />
         </div>
       ) : (
         <>
           <label htmlFor="answer">Options</label>
-          {Array.from({ length: options }, (_, index) => index).map(
-            (key, index) => {
-              return (
-                <Options
-                  index={index}
-                  key={key}
-                  checked={checked}
-                  setChecked={setChecked}
-                  options={options}
-                  setOptions={setOptions}
-                  data={currentData}
-                  setData={setCurrentData}
-                />
-              );
-            }
-          )}
+          {/* {Array.from(
+            { length: options[questionNo - 1] },
+            (_, index) => index
+          ).map((key, index) => {
+            return (
+              <Options
+                index={index}
+                key={key}
+                checked={checked[questionNo - 1]}
+                setChecked={setChecked}
+                options={options[questionNo - 1]}
+                setOptions={setOptions}
+                data={currentData}
+                setData={setData}
+                questionNo={questionNo}
+              />
+            );
+          })} */}
           <div className={css.addOption}>
             <img
               src={plus}
               alt=""
               height={35}
               onClick={() => {
-                setOptions(options + 1);
-                setChecked([...checked, false]);
+                // setChecked((prevData) =>
+                //   prevData.map((item, index) =>
+                //     index === questionNo - 1 ? [...item, false] : item
+                //   )
+                // );
+                // console.log(checked);
+                // setOptions((prevData) => {
+                //   console.log(prevData);
+                // });
+                // console.log(options);
+                // options.map((item) => {
+                //   console.log(item + 1);
+                // });
+                setTest((prevData) => console.log(prevData));
               }}
             />
           </div>

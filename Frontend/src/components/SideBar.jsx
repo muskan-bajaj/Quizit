@@ -1,5 +1,5 @@
 // import React from "react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AuthContext from "../store/AuthContext";
@@ -14,12 +14,11 @@ import settingsIcon from "../assets/settings.svg";
 import publishIcon from "../assets/publishIcon.svg";
 
 import css from "../css/SideBar.module.css";
+import ConfirmPublish from "./modal/ConfirmPublish";
 
 export default function SideBar({
   selected,
   setSelected,
-  totalQuestions,
-  setTotalQuestions,
   questionData,
   setQuestionData,
   settingsData,
@@ -27,6 +26,7 @@ export default function SideBar({
 }) {
   const redirect = useNavigate();
   const authCtx = useContext(AuthContext);
+  const [publish, setPublish] = useState(false);
 
   const createTestHandler = async () => {
     try {
@@ -114,7 +114,7 @@ export default function SideBar({
           >
             <img src={settingsIcon} />
           </div>
-          {Array.from({ length: totalQuestions - 1 }, (_, index) => index).map(
+          {Array.from({ length: questionData.length }, (_, index) => index).map(
             (key, index) => {
               return (
                 <div
@@ -138,7 +138,7 @@ export default function SideBar({
             className={css.navItems}
             style={{ backgroundColor: "#4b515b" }}
             onClick={() => {
-              setTotalQuestions(totalQuestions + 1);
+              // setTotalQuestions(totalQuestions + 1);
               setQuestionData([
                 ...questionData,
                 {
@@ -157,7 +157,7 @@ export default function SideBar({
             className={css.navItems}
             style={{ backgroundColor: "#03C988" }}
             onClick={() => {
-              createTestHandler();
+              setPublish(true);
             }}
           >
             <img src={publishIcon} />
@@ -166,6 +166,7 @@ export default function SideBar({
       ) : (
         <></>
       )}
+      {publish && <ConfirmPublish setPublish={setPublish} />}
     </>
   );
 }
