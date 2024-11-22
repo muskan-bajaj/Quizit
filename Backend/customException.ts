@@ -7,7 +7,7 @@ export class InvalidUserException extends Error {
 }
 
 export class InvalidDataException extends Error {
-  constructor(message: string) {
+  constructor(message: string = "") {
     super(message);
   }
 }
@@ -39,7 +39,6 @@ export function exceptionHandler(
     return;
   }
   if (err instanceof ValidationError) {
-    console.log(JSON.parse(err.message));
     res.status(422).json(JSON.parse(err.message));
     return;
   }

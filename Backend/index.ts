@@ -13,6 +13,8 @@ import {
 } from "./customException";
 import { CustomLogger } from "./logger";
 import moment from "moment-timezone";
+import { Mailer } from "./utils/mailer";
+import Mail from "nodemailer/lib/mailer";
 
 const app = express();
 const logger = new CustomLogger();
