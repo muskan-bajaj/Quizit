@@ -9,7 +9,7 @@ import { eq, or } from "drizzle-orm";
 import { CustomLogger } from "../logger";
 import { Mailer } from "../utils/mailer";
 import { Mnemonic } from "../utils/mnemonic";
-import { InvalidDataException } from "../customException";
+import { InvalidDataException, InvalidUserException } from "../customException";
 const logger = new CustomLogger();
 const config = ConfigSingleton.getInstance();
 const db = getDbInstance();
@@ -17,7 +17,7 @@ const prod = (process.env.NODE_ENV ?? "dev") == "prod";
 const mailer = Mailer.getInstance();
 const mnemonic = new Mnemonic(32);
 
-export async function login(req: Request, res: Response) {
+export async function login(req: Request, res: Response, next: NextFunction) {
   const data: type.login = req.body;
 
   var userOb = await db
@@ -26,7 +26,7 @@ export async function login(req: Request, res: Response) {
     .where(eq(schema.user.username, data.username));
 
   if (userOb.length === 0) {
-    res.status(400).json({ error: "User not found" });
+    next(new InvalidUserException("Invalid Credentials"));
     return;
   }
   var user = userOb[0];
@@ -67,7 +67,7 @@ export async function login(req: Request, res: Response) {
     return;
   }
 
-  res.status(401).json({ error: "Invalid Credentials" });
+  next(new InvalidUserException("Invalid Credentials"));
 }
 
 export async function providerLogin(req: Request, res: Response) {
@@ -89,12 +89,12 @@ export async function register(
     allowed_domains &&
     !allowed_domains.some((domain) => domain === email_domain)
   ) {
-    res.status(400).json({ error: "Email domain not allowed" });
+    next(new InvalidUserException("Email domain not allowed"));
     return;
   }
   var is_teacher = isNaN(Number(data.email.split("@")[0]));
   if (!is_teacher && data.rollno !== Number(data.email.split("@")[0])) {
-    next(new InvalidDataException("Rollno and email should not be different"));
+    next(new InvalidDataException("Rollno and email should be same"));
     return;
   }
   var is_duplicate = await db.$count(
@@ -105,7 +105,7 @@ export async function register(
     )
   );
   if (is_duplicate !== 0) {
-    res.status(400).json({ error: "User already exists" });
+    next(new InvalidUserException("User already exists"));
     return;
   }
 
@@ -128,7 +128,7 @@ export async function register(
   mailer.sendMail(
     [data.email],
     "Welcome to Quizit",
-    `Your password is ${password}`
+    `Hi, ${data.email} Your password is ${password}`
   );
   res.json({ uid: user[0].uid });
 }

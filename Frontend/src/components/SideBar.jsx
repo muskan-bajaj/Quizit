@@ -15,6 +15,7 @@ import publishIcon from "../assets/publishIcon.svg";
 
 import css from "../css/SideBar.module.css";
 import ConfirmPublish from "./modal/ConfirmPublish";
+import { toast } from "react-toastify";
 
 export default function SideBar({
   selected,
@@ -27,7 +28,20 @@ export default function SideBar({
   const redirect = useNavigate();
   const authCtx = useContext(AuthContext);
   const [publish, setPublish] = useState(false);
-
+  const submitTest = async () => {
+    const response = await axios.post("http://localhost:3000/test/create", {
+      setting: {
+        ...settingsData,
+        student_list: settingsData.student_list.split(","),
+        question_count: settingsData.totalQuestions,
+      },
+      questions: questionData,
+    });
+    if (response.status == 200) {
+      toast.success("Test Created Successfully");
+      redirect("/assessment");
+    }
+  };
   const createTestHandler = async () => {
     try {
       const response = await axios.post("http://localhost:3000/test/create", {
@@ -166,7 +180,9 @@ export default function SideBar({
       ) : (
         <></>
       )}
-      {publish && <ConfirmPublish setPublish={setPublish} />}
+      {publish && (
+        <ConfirmPublish setPublish={setPublish} callback={submitTest} />
+      )}
     </>
   );
 }

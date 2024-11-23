@@ -1,6 +1,6 @@
 import css from "../../css/ConfirmPublish.module.css";
 
-export default function ConfirmPublish({ setPublish }) {
+export default function ConfirmPublish({ setPublish, callback }) {
   return (
     <div className={css.modal}>
       <div className={css.modalContent}>
@@ -17,7 +17,7 @@ export default function ConfirmPublish({ setPublish }) {
           >
             Cancel
           </button>
-          <button onClick={() => {}}>Confirm</button>
+          <button onClick={callback}>Confirm</button>
         </div>
       </div>
     </div>
