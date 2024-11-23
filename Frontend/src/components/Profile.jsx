@@ -20,7 +20,11 @@ export default function Profile() {
           <br />
           &nbsp;&nbsp;&nbsp;<span>Email: {authCtx.user.email}</span>
           <br />
-          &nbsp;&nbsp;&nbsp;<span>Roll No: {authCtx.user.rollNo}</span>
+          &nbsp;&nbsp;&nbsp;
+          <span>
+            {authCtx.user.access == "Student" ? "Roll No:" : "Faculty ID:"}{" "}
+            {authCtx.user.rollNo}
+          </span>
           <br />
           &nbsp;&nbsp;&nbsp;<span>Name: {authCtx.user.name}</span>
         </div>

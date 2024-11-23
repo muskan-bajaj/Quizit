@@ -12,8 +12,8 @@ import Loading from "../Loading";
 export default function Result() {
   const [declaredView, setDeclaredView] = useState(true);
   const [pendingView, setPendingView] = useState(true);
-  const [declaredData, setDeclaredData] = useState();
-  const [undeclaredData, setUndeclaredData] = useState();
+  const [declaredData, setDeclaredData] = useState([]);
+  const [undeclaredData, setUndeclaredData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const getTestHandler = async () => {
@@ -58,15 +58,20 @@ export default function Result() {
                   />
                 </div>
               </div>
-              {declaredView && (
-                <div className={css.sectionDetails}>
-                  {declaredData &&
-                    declaredData.map((data, key) => {
+              {declaredView ? (
+                declaredData.length > 0 ? (
+                  <div className={css.sectionDetails}>
+                    {declaredData.map((data, key) => {
                       return (
                         <ResultCard key={key} data={data} declared={true} />
                       );
                     })}
-                </div>
+                  </div>
+                ) : (
+                  <>No results found!</>
+                )
+              ) : (
+                <></>
               )}
             </div>
             <div className={css.pending}>
@@ -84,15 +89,20 @@ export default function Result() {
                   />
                 </div>
               </div>
-              {pendingView && (
-                <div className={css.sectionDetails}>
-                  {undeclaredData &&
-                    undeclaredData.map((data, key) => {
+              {pendingView ? (
+                undeclaredData.length > 0 ? (
+                  <div className={css.sectionDetails}>
+                    {undeclaredData.map((data, key) => {
                       return (
-                        <ResultCard key={key} data={data} declared={false} />
+                        <ResultCard key={key} data={data} declared={true} />
                       );
                     })}
-                </div>
+                  </div>
+                ) : (
+                  <>No results found!</>
+                )
+              ) : (
+                <></>
               )}
             </div>
           </div>
