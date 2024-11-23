@@ -24,10 +24,15 @@ export default function SideBar({
   setQuestionData,
   settingsData,
   setSettingsData,
+  options,
+  setOptions,
+  checked,
+  setChecked,
 }) {
   const redirect = useNavigate();
   const authCtx = useContext(AuthContext);
   const [publish, setPublish] = useState(false);
+
   const submitTest = async () => {
     const response = await axios.post("http://localhost:3000/test/create", {
       setting: {
@@ -163,6 +168,8 @@ export default function SideBar({
                   options: [],
                 },
               ]);
+              setOptions((prevOptions) => [...prevOptions, 1]);
+              setChecked((prevChecked) => [...prevChecked, [false]]);
             }}
           >
             <img src={plusBlack} />

@@ -8,32 +8,33 @@ export default function Options({
   setOptions,
   data,
   setData,
-  index,
+  indexOption,
   checked,
   setChecked,
   questionNo,
 }) {
-  // const [checked, setChecked] = useState([false]);
-  // const [options, setOptions] = useState(1);
-
   const handleInputChange = (value) => {
-    data.options[index] = value;
+    data.options[indexOption] = value;
     setData((prevData) =>
-      prevData.map((item, index) =>
-        index === questionNo - 1 ? { ...item, options: data.options } : item
+      prevData.map((item, indexOption) =>
+        indexOption === questionNo - 1
+          ? { ...item, options: data.options }
+          : item
       )
     );
   };
 
   const handleBooleanChange = (value) => {
-    const newChecked = [...checked];
-    newChecked[index] = value;
-
-    if (newChecked[index]) {
+    setChecked((prevChecked) => {
+      const updatedChecked = [...prevChecked];
+      updatedChecked[questionNo - 1][indexOption] = value;
+      return updatedChecked;
+    });
+    if (value) {
       setData((prevData) =>
         prevData.map((item, index) =>
           index === questionNo - 1
-            ? { ...item, answer: [...data.answer, data.options[index]] }
+            ? { ...item, answer: [...data.answer, data.options[indexOption]] }
             : item
         )
       );
@@ -44,24 +45,41 @@ export default function Options({
             ? {
                 ...item,
                 answer: data.answer.filter(
-                  (item) => item !== data.options[index]
+                  (item) => item !== data.options[indexOption]
                 ),
               }
             : item
         )
       );
     }
-
-    setChecked((prevData) =>
-      prevData.map((item, index) =>
-        index === questionNo - 1 ? newChecked : item
-      )
-    );
   };
 
-  useEffect(() => {
-    console.log(checked);
-  }, [checked]);
+  const handleDeleteOption = () => {
+    const optionValue = data.options[indexOption];
+    setData((prevData) =>
+      prevData.map((item, index) =>
+        index === questionNo - 1
+          ? {
+              ...item,
+              options: item.options.filter((_, i) => i !== indexOption),
+              answer: item.answer.filter((item) => item !== optionValue),
+            }
+          : item
+      )
+    );
+    setOptions((prevOptions) => {
+      const updatedOptions = [...prevOptions];
+      updatedOptions[questionNo - 1] -= 1;
+      return updatedOptions;
+    });
+    setChecked((prevChecked) => {
+      const updatedChecked = [...prevChecked];
+      updatedChecked[questionNo - 1] = updatedChecked[questionNo - 1].filter(
+        (_, i) => i !== indexOption
+      );
+      return updatedChecked;
+    });
+  };
 
   return (
     <div className={css.options}>
@@ -70,7 +88,7 @@ export default function Options({
         id="answer"
         className={css.optionValue}
         placeholder="Enter Option"
-        value={data.options[index]}
+        value={data.options[indexOption]}
         onChange={(e) => {
           handleInputChange(e.target.value);
         }}
@@ -79,7 +97,7 @@ export default function Options({
         <span>
           <input
             type="checkbox"
-            checked={checked[index]}
+            checked={checked[indexOption]}
             onChange={(e) => {
               handleBooleanChange(e.target.checked);
             }}
@@ -91,33 +109,36 @@ export default function Options({
             src={deleteIcon}
             height={20}
             onClick={() => {
-              const optionValue = data.options[index];
-              setData((prevData) =>
-                prevData.map((item, index) =>
-                  index === questionNo - 1
-                    ? {
-                        ...item,
-                        options: data.options.filter((_, i) => i !== index),
-                        answer: data.answer.filter(
-                          (item, index) => item !== optionValue
-                        ),
-                      }
-                    : item
-                )
-              );
-              setChecked((prevData) =>
-                prevData.map((item, index) =>
-                  index === questionNo - 1
-                    ? item.filter((_, i) => i !== index)
-                    : item
-                )
-              );
-              setOptions((prevData) =>
-                prevData.map((item, index) =>
-                  index === questionNo - 1 ? item - 1 : item
-                )
-              );
+              handleDeleteOption();
             }}
+            // onClick={() => {
+            //   const optionValue = data.options[index];
+            //   setData((prevData) =>
+            //     prevData.map((item, index) =>
+            //       index === questionNo - 1
+            //         ? {
+            //             ...item,
+            //             options: data.options.filter((_, i) => i !== index),
+            //             answer: data.answer.filter(
+            //               (item, index) => item !== optionValue
+            //             ),
+            //           }
+            //         : item
+            //     )
+            //   );
+            //   setChecked((prevData) =>
+            //     prevData.map((item, index) =>
+            //       index === questionNo - 1
+            //         ? item.filter((_, i) => i !== index)
+            //         : item
+            //     )
+            //   );
+            //   setOptions((prevData) =>
+            //     prevData.map((item, index) =>
+            //       index === questionNo - 1 ? item - 1 : item
+            //     )
+            //   );
+            // }}
           />
         ) : (
           <></>

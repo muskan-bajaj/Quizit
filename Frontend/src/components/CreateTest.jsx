@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SideBar from "./SideBar";
 import Settings from "./createTest/Settings";
 import AddQuestion from "./createTest/AddQuestion";
 
 export default function CreateTest() {
   const [selected, setSelected] = useState(0);
-  const [options, setOptions] = useState(1);
-  const [checked, setChecked] = useState([false]);
+  const [options, setOptions] = useState([1]);
+  const [checked, setChecked] = useState([[false]]);
   const [settingsData, setSettingsData] = useState({
     violation_count: "",
     totalQuestions: "",
@@ -30,6 +30,10 @@ export default function CreateTest() {
     },
   ]);
 
+  useEffect(() => {
+    console.log(questionData);
+  }, [questionData]);
+
   return (
     <div className="flexpage">
       <SideBar
@@ -39,6 +43,10 @@ export default function CreateTest() {
         setQuestionData={setQuestionData}
         settingsData={settingsData}
         setSettingsData={setSettingsData}
+        options={options}
+        setOptions={setOptions}
+        checked={checked}
+        setChecked={setChecked}
       />
       {selected == 0 && (
         <Settings data={settingsData} setData={setSettingsData} />

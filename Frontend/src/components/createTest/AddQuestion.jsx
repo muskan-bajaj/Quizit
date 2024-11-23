@@ -13,30 +13,11 @@ export default function AddQuestion({
   currentData,
   data,
   setData,
-  // options,
-  // setOptions,
-  // checked,
-  // setChecked,
+  options,
+  setOptions,
+  checked,
+  setChecked,
 }) {
-  // const [currentData, setCurrentData] = useState(data);
-  const [checked, setChecked] = useState([[false]]);
-  const [options, setOptions] = useState([[1]]);
-  const [test, setTest] = useState([1]);
-
-  // useEffect(() => {
-  //   setData((prevData) =>
-  //     prevData.map((item, index) =>
-  //       index === questionNo - 1 ? currentData : item
-  //     )
-  //   );
-  // }, [currentData]);
-
-  useEffect(() => {
-    console.log(options);
-    console.log("lorem");
-    console.log(options[questionNo - 1]);
-  }, [options]);
-
   const deleteQuestionHandler = () => {
     setData(data.filter((_, i) => i !== questionNo - 1));
     setSelected(1);
@@ -130,13 +111,13 @@ export default function AddQuestion({
       ) : (
         <>
           <label htmlFor="answer">Options</label>
-          {/* {Array.from(
+          {Array.from(
             { length: options[questionNo - 1] },
             (_, index) => index
           ).map((key, index) => {
             return (
               <Options
-                index={index}
+                indexOption={index}
                 key={key}
                 checked={checked[questionNo - 1]}
                 setChecked={setChecked}
@@ -147,27 +128,26 @@ export default function AddQuestion({
                 questionNo={questionNo}
               />
             );
-          })} */}
+          })}
           <div className={css.addOption}>
             <img
               src={plus}
               alt=""
               height={35}
               onClick={() => {
-                // setChecked((prevData) =>
-                //   prevData.map((item, index) =>
-                //     index === questionNo - 1 ? [...item, false] : item
-                //   )
-                // );
-                // console.log(checked);
-                // setOptions((prevData) => {
-                //   console.log(prevData);
-                // });
-                // console.log(options);
-                // options.map((item) => {
-                //   console.log(item + 1);
-                // });
-                setTest((prevData) => console.log(prevData));
+                setOptions((prevOptions) => {
+                  const updatedOptions = [...prevOptions];
+                  updatedOptions[questionNo - 1] += 1;
+                  return updatedOptions;
+                });
+                setChecked((prevChecked) => {
+                  const updatedChecked = [...prevChecked];
+                  updatedChecked[questionNo - 1] = [
+                    ...updatedChecked[questionNo - 1],
+                    false,
+                  ];
+                  return updatedChecked;
+                });
               }}
             />
           </div>
