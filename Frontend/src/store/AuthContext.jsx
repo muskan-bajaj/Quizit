@@ -32,12 +32,9 @@ export const AuthContextProvider = (props) => {
   };
 
   const loginHandler = (name, email, rollno, access) => {
-    setUser({
-      name: name,
-      email: email,
-      rollNo: rollno,
-      access: access,
-    });
+    const userData = { name, email, rollNo: rollno, access };
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("isLoggedIn", true);
     setUserIsLoggedIn(true);
   };
@@ -59,8 +56,17 @@ export const AuthContextProvider = (props) => {
   );
 
   useEffect(() => {
-    verifyLogIn();
+    const storedUser = localStorage.getItem("user");
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if (storedUser && isLoggedIn) {
+      setUser(JSON.parse(storedUser));
+      setUserIsLoggedIn(true);
+    } else {
+      verifyLogIn();
+    }
   }, []);
+
   return (
     <AuthContext.Provider value={contextValue}>
       {props.children}
