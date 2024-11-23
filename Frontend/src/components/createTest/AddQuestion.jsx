@@ -117,7 +117,7 @@ export default function AddQuestion({
           ).map((key, index) => {
             return (
               <Options
-                index={index}
+                indexOption={index}
                 key={key}
                 checked={checked[questionNo - 1]}
                 setChecked={setChecked}

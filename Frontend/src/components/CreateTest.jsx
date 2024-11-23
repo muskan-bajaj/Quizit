@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SideBar from "./SideBar";
 import Settings from "./createTest/Settings";
 import AddQuestion from "./createTest/AddQuestion";
@@ -29,6 +29,10 @@ export default function CreateTest() {
       options: [],
     },
   ]);
+
+  useEffect(() => {
+    console.log(questionData);
+  }, [questionData]);
 
   return (
     <div className="flexpage">
