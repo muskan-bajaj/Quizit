@@ -12,7 +12,7 @@ export default function QuestionNavigation({
   type,
 }) {
   const redirect = useNavigate();
-
+  console.log(data);
   return (
     <div className={css.sidebar}>
       <div className={logo}>

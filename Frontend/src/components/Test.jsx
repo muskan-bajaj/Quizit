@@ -112,7 +112,7 @@ export default function Test() {
                 </div>
               )}
               <div className={css.nextButton}>
-                {data && visited.length == data.questionCount ? (
+                {data && visited.length == data.questionBanks.length ? (
                   <button
                     onClick={() => {
                       setViewSubmitModal(true);

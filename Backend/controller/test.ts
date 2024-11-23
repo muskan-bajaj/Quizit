@@ -18,7 +18,7 @@ const logger = new CustomLogger();
 const mailer = Mailer.getInstance();
 const db = getDbInstance();
 function roundHalf(num: number) {
-  return Math.ceil(num * 2) / 2;
+  return Math.max(Math.ceil(num * 2) / 2, 0);
 }
 
 function groupIntoOpenClosed(tests: any[]) {
@@ -30,7 +30,7 @@ function groupIntoOpenClosed(tests: any[]) {
   }>(
     (acc, item) => {
       const endDate = moment(item.end);
-      if (endDate.date() < today.date()) {
+      if (endDate < today) {
         acc.closed.push(item); // Add to "past" group
       } else {
         acc.open.push(item); // Add to "future" group
@@ -92,7 +92,14 @@ export async function createTest(
       )
     );
   }
-  logger.log(rawData);
+  if (rawData.questions.length < rawData.setting.question_count) {
+    next(
+      new InvalidDataException(
+        "Question count is less than the number of questions provided"
+      )
+    );
+    return;
+  }
   // Raw Data into db
   await db.transaction(async (trx) => {
     var test = await trx
@@ -445,8 +452,9 @@ export async function submitQuestion(
       return true;
     });
     const numberAnsweredButWrong = req.body.answer.length - correctAns;
+    logger.log(numberAnsweredButWrong, correctAns, correctOptions);
     const markAwarded = roundHalf(
-      ((correctAns - numberAnsweredButWrong / 3) / correctOptions) *
+      ((correctAns - numberAnsweredButWrong / 2) / correctOptions) *
         question.marksAwarded
     );
 
@@ -457,6 +465,7 @@ export async function submitQuestion(
         tmid: testManager.tmid,
         marksObtained: markAwarded,
         submittedAt: moment().format(),
+        submittedAnswer: req.body.answer,
       })
       .onConflictDoUpdate({
         target: [schema.submission.qid, schema.submission.tmid],
@@ -474,6 +483,7 @@ export async function submitQuestion(
         tmid: testManager.tmid,
         marksObtained: marksObtained as number,
         submittedAt: moment().format(),
+        submittedAnswer: req.body.answer,
       })
       .onConflictDoUpdate({
         target: [schema.submission.qid, schema.submission.tmid],
@@ -510,6 +520,7 @@ export async function getTestReport(
     columns: {
       marksObtained: true,
       submittedAt: true,
+      submittedAnswer: true,
     },
     with: {
       questionBank: {
@@ -519,6 +530,9 @@ export async function getTestReport(
           type: true,
           marksAwarded: true,
           AiExplanation: true,
+        },
+        with: {
+          options: true,
         },
       },
     },
@@ -541,9 +555,22 @@ export async function getTestReport(
     return acc + (item.marksObtained ?? 0);
   }, 0);
 
+  var processedRep = report.map((item) => {
+    var options = item.options.map((option) => {
+      return option.option;
+    });
+    var correctAns = item.options
+      .map((option) => {
+        if (option.correct) {
+          return option.option;
+        }
+      })
+      .filter((option) => option);
+    return { ...item, options: options, answer: correctAns };
+  });
   res.json({
     test: { totalMarksObtained, totalMarks, ...testManager.test },
-    submission: [...report],
+    submission: [...processedRep],
   });
 }
 
@@ -584,12 +611,39 @@ export async function getTestReportList(
               username: true,
             },
           },
+          questionBanks: true,
         },
       },
+      submissions: true,
     },
   });
 
-  var testsFinal = tests.map((test) => test.test);
+  const testsFinal = tests.map((testManager) => {
+    const test = testManager.test;
+
+    // Aggregate marks from submissions
+    const totalMarksObtained = testManager.submissions.reduce(
+      (sum, submission) => {
+        return sum + (submission.marksObtained || 0); // Handle null/undefined
+      },
+      0
+    );
+
+    const totalMarks = test.questionBanks.reduce((sum, question) => {
+      return sum + (question.marksAwarded || 0); // Handle null/undefined
+    }, 0);
+
+    return {
+      ...test,
+      createdBy: test.user,
+      totalMarks,
+      totalMarksObtained, // Include aggregated marks
+      subjectId: undefined, // Remove unwanted fields
+      user: undefined,
+      submissions: undefined,
+      questionBanks: undefined, // Exclude raw submission details
+    };
+  });
   var testsRes = testsFinal.map((test) => {
     return {
       ...test,

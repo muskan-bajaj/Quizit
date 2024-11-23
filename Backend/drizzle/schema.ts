@@ -1,4 +1,3 @@
-import { table } from "console";
 import {
   pgTable,
   varchar,
@@ -13,6 +12,7 @@ import {
   decimal,
   real,
   unique,
+  json,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm/relations";
 
@@ -83,6 +83,7 @@ export const submission = pgTable(
         onUpdate: "cascade",
       })
       .notNull(),
+    submittedAnswer: json(),
     marksObtained: real("marks_obtained"),
     submittedAt: timestamp("submitted_at", {
       precision: 3,
@@ -247,7 +248,7 @@ export const subjectRelations = relations(subject, ({ many }) => ({
   tests: many(test),
 }));
 
-export const testManagerRelations = relations(testManager, ({ one }) => ({
+export const testManagerRelations = relations(testManager, ({ one, many }) => ({
   test: one(test, {
     fields: [testManager.tid],
     references: [test.tid],
@@ -256,4 +257,5 @@ export const testManagerRelations = relations(testManager, ({ one }) => ({
     fields: [testManager.uid],
     references: [user.uid],
   }),
+  submissions: many(submission),
 }));
