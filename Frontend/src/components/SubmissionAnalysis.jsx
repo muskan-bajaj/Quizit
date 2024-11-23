@@ -70,7 +70,7 @@ export default function SubmissionAnalysis() {
                   {data[current].type == "long" ? (
                     <div className={css.long}>
                       <textarea
-                        value={data[current].answer}
+                        value={data[current].submittedAnswer[0]}
                         disabled
                         rows={15}
                       />
@@ -82,7 +82,9 @@ export default function SubmissionAnalysis() {
                           <label key={index} className={css.checkbox}>
                             <input
                               type="checkbox"
-                              checked={data[current].answer.includes(value)}
+                              checked={data[current].submittedAnswer.includes(
+                                value
+                              )}
                               disabled
                             />
                             <span className={css.checkmark}></span>

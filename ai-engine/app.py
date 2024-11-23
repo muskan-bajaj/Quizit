@@ -6,17 +6,18 @@ from rouge_score import rouge_scorer
 import re
 from openai import OpenAI
 from dotenv import load_dotenv
+import uvicorn
 import os
 
 load_dotenv()
 
 app = FastAPI()
 
-model = SentenceTransformer('paraphrase-mpnet-base-v2')
+model = SentenceTransformer("paraphrase-mpnet-base-v2")
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),  
+    api_key=os.getenv("OPENROUTER_API_KEY"),
 )
 
 
@@ -26,22 +27,23 @@ class EvaluationRequest(BaseModel):
 
 
 def preprocess_text(text):
-    return re.sub(r'[^\w\s]', '', text.lower())
+    return re.sub(r"[^\w\s]", "", text.lower())
+
 
 def calculate_length_penalty(student_answer, teacher_answer):
     student_len = len(student_answer.split())
     teacher_len = len(teacher_answer.split())
     length_ratio = student_len / teacher_len
 
-    
     if length_ratio < 0.7:
-        penalty = 0.8  
+        penalty = 0.8
     elif 0.7 <= length_ratio < 1:
-        penalty = 1 - (length_ratio - 0.7) / 0.3  
+        penalty = 1 - (length_ratio - 0.7) / 0.3
     else:
-        penalty = 0  
+        penalty = 0
 
     return penalty
+
 
 def generate_analysis(student_answer, teacher_answer):
     prompt = f"""
@@ -54,42 +56,31 @@ def generate_analysis(student_answer, teacher_answer):
     Teacher Answer: {teacher_answer}
 """
 
-    
-  
     completion = client.chat.completions.create(
         model="openai/gpt-4o-mini-2024-07-18",
-        messages=[{
-            "role": "user",
-            "content": prompt
-        }]
+        messages=[{"role": "user", "content": prompt}],
     )
 
-    
     analysis = completion.choices[0].message.content
     return analysis
 
+
 def evaluate_student_answer(student_answer, teacher_answer):
-   
-    
+
     teacher_answer = preprocess_text(teacher_answer)
     student_answer = preprocess_text(student_answer)
 
-   
     teacher_embedding = model.encode(teacher_answer).tolist()
     student_embedding = model.encode(student_answer).tolist()
 
-   
     similarity_score = cosine_similarity([student_embedding], [teacher_embedding])[0][0]
 
-    
-    scorer = rouge_scorer.RougeScorer(['rouge1', 'rougeL'], use_stemmer=True)
+    scorer = rouge_scorer.RougeScorer(["rouge1", "rougeL"], use_stemmer=True)
     rouge_scores = scorer.score(student_answer, teacher_answer)
 
-   
-    rouge1_f1 = rouge_scores['rouge1'].fmeasure
-    rougeL_f1 = rouge_scores['rougeL'].fmeasure
+    rouge1_f1 = rouge_scores["rouge1"].fmeasure
+    rougeL_f1 = rouge_scores["rougeL"].fmeasure
 
-  
     length_penalty = calculate_length_penalty(student_answer, teacher_answer)
 
     analysis = generate_analysis(student_answer, teacher_answer)
@@ -98,22 +89,26 @@ def evaluate_student_answer(student_answer, teacher_answer):
     rouge_weight = 0.3
     length_penalty_weight = 0.2
 
-    final_score = (similarity_score * similarity_weight) + \
-                  ((rouge1_f1 + rougeL_f1) / 2 * rouge_weight) * \
-                  (1 - length_penalty * length_penalty_weight)
+    final_score = (similarity_score * similarity_weight) + (
+        (rouge1_f1 + rougeL_f1) / 2 * rouge_weight
+    ) * (1 - length_penalty * length_penalty_weight)
 
-    return {
-        "final_score": f"{round(final_score, 2)*100}%", 
-        "analysis": analysis  
-    }
+    return {"final_score": {round(final_score, 2)}, "analysis": analysis}
 
 
 @app.post("/evaluate")
 async def evaluate(request: EvaluationRequest):
-    
-    if not request.student_answer or not request.teacher_answer:
-        raise HTTPException(status_code=400, detail="Both 'student_answer' and 'teacher_answer' are required.")
 
-   
+    if not request.student_answer or not request.teacher_answer:
+        raise HTTPException(
+            status_code=400,
+            detail="Both 'student_answer' and 'teacher_answer' are required.",
+        )
+    print(request.student_answer, request.teacher_answer)
     results = evaluate_student_answer(request.student_answer, request.teacher_answer)
     return results
+
+
+def main():
+    print("Hello World")
+    uvicorn.run(app, port=8000, reload=True, workers=2)

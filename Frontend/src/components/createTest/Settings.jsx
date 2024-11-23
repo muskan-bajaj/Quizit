@@ -1,8 +1,18 @@
 // import React from "react";
-
+import { useState, useEffect } from "react";
 import css from "../../css/Settings.module.css";
 import moment from "moment-timezone";
+import axios from "axios";
+
 export default function Settings({ data, setData }) {
+  const [subjects, setSubjects] = useState([]);
+  useEffect(() => {
+    axios.get("http://localhost:3000/test/subjects").then((res) => {
+      console.log(res.data);
+      setSubjects([...res.data]);
+    });
+  }, []);
+
   return (
     <div className={css.settingsScreen}>
       <div className={css.heading}>Test Setting</div>
@@ -19,14 +29,29 @@ export default function Settings({ data, setData }) {
       </div>
       <div className={css.inputs}>
         <label htmlFor="subject">Subject Name</label>
-        <input
+        {/* <input
           type="text"
           placeholder="Enter Subject Name"
           value={data.subject}
           onChange={(e) => {
             setData({ ...data, subject: e.target.value });
           }}
-        />
+        /> */}
+        <select
+          onChange={(e) => {
+            console.log(e.target.value);
+            setData({ ...data, subject: e.target.value });
+          }}
+        >
+          <option value="" disabled selected>
+            Select Subject
+          </option>
+          {subjects.map((subject, idx) => (
+            <option key={idx} value={subject.sid}>
+              {`${subject.name} ${subject.subjectId ?? ""}`}
+            </option>
+          ))}
+        </select>
       </div>
       <div className={css.inputs}>
         <label htmlFor="semester">Semester</label>
@@ -136,7 +161,7 @@ export default function Settings({ data, setData }) {
           placeholder="Enter Instruction"
           value={data.instruction}
           onChange={(e) => {
-            setData({ ...data, instruction: e.target.value });
+            setData({ ...data, instructions: e.target.value });
           }}
         />
       </div>

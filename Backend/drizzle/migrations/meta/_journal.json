@@ -22,6 +22,20 @@
       "when": 1732362694585,
       "tag": "0002_massive_stardust",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1732398184432,
+      "tag": "0003_silly_synch",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1732401591117,
+      "tag": "0004_chief_jane_foster",
+      "breakpoints": true
     }
   ]
 }
