@@ -1,0 +1,27 @@
+html {
+  font-family: sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1 {
+  letter-spacing: -1.1px;
+}
+
+:fullscreen,
+::backdrop {
+  background-color: #222831;
+}
+
+.exam-intro-root {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.test-container {
+  margin: auto;
+}
