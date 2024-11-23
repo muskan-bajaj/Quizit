@@ -5,8 +5,8 @@ import AddQuestion from "./createTest/AddQuestion";
 
 export default function CreateTest() {
   const [selected, setSelected] = useState(0);
-  const [options, setOptions] = useState(1);
-  const [checked, setChecked] = useState([false]);
+  const [options, setOptions] = useState([1]);
+  const [checked, setChecked] = useState([[false]]);
   const [settingsData, setSettingsData] = useState({
     violation_count: "",
     totalQuestions: "",
@@ -39,6 +39,10 @@ export default function CreateTest() {
         setQuestionData={setQuestionData}
         settingsData={settingsData}
         setSettingsData={setSettingsData}
+        options={options}
+        setOptions={setOptions}
+        checked={checked}
+        setChecked={setChecked}
       />
       {selected == 0 && (
         <Settings data={settingsData} setData={setSettingsData} />
