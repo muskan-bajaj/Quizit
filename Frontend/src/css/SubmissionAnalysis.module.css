@@ -9,6 +9,12 @@
   padding-bottom: 30px;
 }
 
+.views {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .answerScreen {
   background-color: #eeeeee;
   border-radius: 10px;
@@ -82,6 +88,7 @@
   display: flex;
   justify-content: flex-end;
   width: 100%;
+  gap: 10px;
 }
 
 .nextButton button {
@@ -92,4 +99,15 @@
   border-radius: 10px;
   font-size: large;
   cursor: pointer;
+}
+
+.aiHeading {
+  display: flex;
+  gap: 10px;
+  color: black;
+}
+
+.explaination {
+  color: black;
+  margin-top: 10px;
 }

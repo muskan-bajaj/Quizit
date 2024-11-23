@@ -11,6 +11,7 @@ import plus from "../assets/plus.svg";
 
 import css from "../css/Assessment.module.css";
 import axios from "axios";
+import Loading from "../Loading";
 
 export default function Assessment() {
   const authCtx = useContext(AuthContext);
@@ -20,6 +21,7 @@ export default function Assessment() {
   const [closedView, setClosedView] = useState(true);
   const [upcomingData, setUpcomingData] = useState([]);
   const [closedData, setClosedData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getTestHandler = async () => {
     try {
@@ -27,8 +29,10 @@ export default function Assessment() {
       console.log(response.data);
       setUpcomingData(response.data.open);
       setClosedData(response.data.closed);
+      setLoading(false);
     } catch (e) {
       console.log(e);
+      setLoading(false);
     }
   };
 
@@ -39,71 +43,77 @@ export default function Assessment() {
   return (
     <div className="flexpage">
       <SideBar />
-      <div className={css.assessmentScreen}>
-        <div className={css.heading}>Assessments</div>
-        <div className={css.upcoming}>
-          <div className={css.sectionHeading}>
-            <div className={css.text}>Upcoming</div>
-            <div className={css.line}>
-              <hr />
-            </div>
-            <div className={css.dropdownArrow}>
-              <img
-                src={upcomingView ? arrow : arrowUp}
-                onClick={() => {
-                  setUpcomingView(!upcomingView);
-                }}
-              />
-            </div>
-          </div>
-          {upcomingView && (
-            <div className={css.sectionDetails}>
-              {upcomingData.length > 0 &&
-                upcomingData.map((data, key) => {
-                  return (
-                    <AssessmentCard key={key} data={data} closed={false} />
-                  );
-                })}
-              {authCtx.user.access == "Teacher" ? (
-                <div
-                  className={css.addNew}
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className={css.assessmentScreen}>
+          <div className={css.heading}>Assessments</div>
+          <div className={css.upcoming}>
+            <div className={css.sectionHeading}>
+              <div className={css.text}>Upcoming</div>
+              <div className={css.line}>
+                <hr />
+              </div>
+              <div className={css.dropdownArrow}>
+                <img
+                  src={upcomingView ? arrow : arrowUp}
                   onClick={() => {
-                    redirect("/createTest");
+                    setUpcomingView(!upcomingView);
                   }}
-                >
-                  <img src={plus} alt="" />
-                </div>
-              ) : (
-                <></>
-              )}
+                />
+              </div>
             </div>
-          )}
-        </div>
-        <div className={css.closed}>
-          <div className={css.sectionHeading}>
-            <div className={css.text}>Closed</div>
-            <div className={css.line}>
-              <hr />
-            </div>
-            <div className={css.dropdownArrow}>
-              <img
-                src={closedView ? arrow : arrowUp}
-                onClick={() => {
-                  setClosedView(!closedView);
-                }}
-              />
-            </div>
+            {upcomingView && (
+              <div className={css.sectionDetails}>
+                {upcomingData.length > 0 &&
+                  upcomingData.map((data, key) => {
+                    return (
+                      <AssessmentCard key={key} data={data} closed={false} />
+                    );
+                  })}
+                {authCtx.user.access == "Teacher" ? (
+                  <div
+                    className={css.addNew}
+                    onClick={() => {
+                      redirect("/createTest");
+                    }}
+                  >
+                    <img src={plus} alt="" />
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            )}
           </div>
-          {closedView && (
-            <div className={css.sectionDetails}>
-              {closedData.length > 0 &&
-                closedData.map((data, key) => {
-                  return <AssessmentCard key={key} data={data} closed={true} />;
-                })}
+          <div className={css.closed}>
+            <div className={css.sectionHeading}>
+              <div className={css.text}>Closed</div>
+              <div className={css.line}>
+                <hr />
+              </div>
+              <div className={css.dropdownArrow}>
+                <img
+                  src={closedView ? arrow : arrowUp}
+                  onClick={() => {
+                    setClosedView(!closedView);
+                  }}
+                />
+              </div>
             </div>
-          )}
+            {closedView && (
+              <div className={css.sectionDetails}>
+                {closedData.length > 0 &&
+                  closedData.map((data, key) => {
+                    return (
+                      <AssessmentCard key={key} data={data} closed={true} />
+                    );
+                  })}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

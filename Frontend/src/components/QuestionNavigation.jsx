@@ -19,7 +19,7 @@ export default function QuestionNavigation({
         <img src={logo} />
       </div>
       {data &&
-        Array.from({ length: data.questionCount }, (_, index) => index).map(
+        Array.from({ length: data.length }, (_, index) => index).map(
           (_, index) => {
             return (
               <div
