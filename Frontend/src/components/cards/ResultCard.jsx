@@ -59,7 +59,7 @@ export default function ResultCard({ data, declared }) {
           authCtx.user.access == "Student" ? (
             <>
               <button className={css.score}>
-                {data.score}/{data.total}
+                {data.totalMarksObtained}/{data.totalMarks}
               </button>
               <button
                 className={css.report}

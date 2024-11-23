@@ -21,6 +21,7 @@ export default function Result() {
       const response = await axios.get(
         "http://localhost:3000/test/report/list"
       );
+      console.log(response.data);
       setDeclaredData(response.data.published);
       setUndeclaredData(response.data.pending);
       setLoading(false);
