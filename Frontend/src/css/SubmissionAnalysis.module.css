@@ -42,10 +42,13 @@
   font-size: 18px;
   margin-bottom: 10px;
   cursor: pointer;
+  cursor: not-allowed;
+  color: black;
 }
 
 .checkbox input {
   display: none;
+  cursor: not-allowed;
 }
 
 .checkbox .checkmark {
@@ -58,11 +61,13 @@
   position: relative;
   transition: all 0.3s ease;
   border-color: #007ac1;
+  cursor: not-allowed;
 }
 
 .checkbox input:checked + .checkmark {
   background-color: #00c853;
   border-color: #00c853;
+  cursor: not-allowed;
 }
 
 .checkbox .checkmark::after {
@@ -77,10 +82,12 @@
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.3s ease;
+  cursor: not-allowed;
 }
 
 .checkbox input:checked + .checkmark::after {
   opacity: 1;
+  cursor: not-allowed;
 }
 
 .nextButton {

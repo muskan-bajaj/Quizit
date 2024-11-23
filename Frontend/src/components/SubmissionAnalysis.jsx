@@ -77,15 +77,19 @@ export default function SubmissionAnalysis() {
                     </div>
                   ) : (
                     <div className={css.choice}>
-                      {/* {data[current].options.map((value, index) => {
+                      {data[current].options.map((value, index) => {
                         return (
                           <label key={index} className={css.checkbox}>
-                            <input type="checkbox" value={value.option} />
+                            <input
+                              type="checkbox"
+                              checked={data[current].answer.includes(value)}
+                              disabled
+                            />
                             <span className={css.checkmark}></span>
-                            {value.option}
+                            {value}
                           </label>
                         );
-                      })} */}
+                      })}
                     </div>
                   )}
                   <div className={css.nextButton}>
