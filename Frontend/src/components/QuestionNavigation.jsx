@@ -19,36 +19,35 @@ export default function QuestionNavigation({
         <img src={logo} />
       </div>
       {data &&
-        Array.from(
-          { length: data.questionBanks.length },
-          (_, index) => index
-        ).map((_, index) => {
-          return (
-            <div
-              key={index}
-              className={css.navItems}
-              id={css.numbers}
-              style={
-                type == "view"
-                  ? visited.length == index + 1
-                    ? { backgroundColor: "#ffffff" }
-                    : visited[index]
-                    ? { backgroundColor: "#03C988" }
-                    : { backgroundColor: "" }
-                  : visited == index
-                  ? { backgroundColor: "#ffffff", cursor: "pointer" }
-                  : { backgroundColor: "#4b515b", cursor: "pointer" }
-              }
-              onClick={() => {
-                if (type == "navigation") {
-                  setVisited(index);
+        Array.from({ length: data.length }, (_, index) => index).map(
+          (_, index) => {
+            return (
+              <div
+                key={index}
+                className={css.navItems}
+                id={css.numbers}
+                style={
+                  type == "view"
+                    ? visited.length == index + 1
+                      ? { backgroundColor: "#ffffff" }
+                      : visited[index]
+                      ? { backgroundColor: "#03C988" }
+                      : { backgroundColor: "" }
+                    : visited == index
+                    ? { backgroundColor: "#ffffff", cursor: "pointer" }
+                    : { backgroundColor: "#4b515b", cursor: "pointer" }
                 }
-              }}
-            >
-              {index + 1}
-            </div>
-          );
-        })}
+                onClick={() => {
+                  if (type == "navigation") {
+                    setVisited(index);
+                  }
+                }}
+              >
+                {index + 1}
+              </div>
+            );
+          }
+        )}
       <div className={css.navItems}>
         <img
           src={back}

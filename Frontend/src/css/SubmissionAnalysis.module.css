@@ -9,6 +9,12 @@
   padding-bottom: 30px;
 }
 
+.views {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .answerScreen {
   background-color: #eeeeee;
   border-radius: 10px;
@@ -36,10 +42,13 @@
   font-size: 18px;
   margin-bottom: 10px;
   cursor: pointer;
+  cursor: not-allowed;
+  color: black;
 }
 
 .checkbox input {
   display: none;
+  cursor: not-allowed;
 }
 
 .checkbox .checkmark {
@@ -52,11 +61,13 @@
   position: relative;
   transition: all 0.3s ease;
   border-color: #007ac1;
+  cursor: not-allowed;
 }
 
 .checkbox input:checked + .checkmark {
   background-color: #00c853;
   border-color: #00c853;
+  cursor: not-allowed;
 }
 
 .checkbox .checkmark::after {
@@ -71,10 +82,12 @@
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.3s ease;
+  cursor: not-allowed;
 }
 
 .checkbox input:checked + .checkmark::after {
   opacity: 1;
+  cursor: not-allowed;
 }
 
 .nextButton {
@@ -82,6 +95,7 @@
   display: flex;
   justify-content: flex-end;
   width: 100%;
+  gap: 10px;
 }
 
 .nextButton button {
@@ -92,4 +106,15 @@
   border-radius: 10px;
   font-size: large;
   cursor: pointer;
+}
+
+.aiHeading {
+  display: flex;
+  gap: 10px;
+  color: black;
+}
+
+.explaination {
+  color: black;
+  margin-top: 10px;
 }

@@ -64,16 +64,6 @@ export default function CreateTest() {
           setChecked={setChecked}
         />
       )}
-      {/* {selected == 0 ? (
-        <Settings data={settingsData} setData={setSettingsData} s />
-      ) : (
-        <AddQuestion
-          questionNo={selected}
-          setSelected={setSelected}
-          data={questionData}
-          setData={setQuestionData}
-        />
-      )} */}
     </div>
   );
 }
