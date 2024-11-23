@@ -30,6 +30,11 @@ export default function Login() {
         username: login.email,
         password: login.password,
       });
+      if (response.status != 200) {
+        setError("Invalid Credentials");
+        setLoading(false);
+        return;
+      }
       authCtx.login(
         response.data.user.name,
         response.data.user.email,
@@ -40,7 +45,7 @@ export default function Login() {
       redirect("/profile");
       setLoading(false);
     } catch (err) {
-      setError(err.response.data.error);
+      setError(err.response);
       setLoading(false);
     }
   };

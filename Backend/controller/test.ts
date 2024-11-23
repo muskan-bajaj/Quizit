@@ -92,7 +92,14 @@ export async function createTest(
       )
     );
   }
-  logger.log(rawData);
+  if (rawData.questions.length < rawData.setting.question_count) {
+    next(
+      new InvalidDataException(
+        "Question count is less than the number of questions provided"
+      )
+    );
+    return;
+  }
   // Raw Data into db
   await db.transaction(async (trx) => {
     var test = await trx

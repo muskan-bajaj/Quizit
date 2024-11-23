@@ -5,6 +5,7 @@ import css from "../css/Register.module.css";
 import axios from "axios";
 import SelectRole from "./modal/SelectRole";
 import Loading from "../Loading";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const redirect = useNavigate();
@@ -18,43 +19,41 @@ export default function Register() {
     rollno: "",
   });
   const [error, setError] = useState("");
-  const [role, setRole] = useState(true);
+  const [role, setRole] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
     setLoading(true);
     setError("");
-    if (
-      (register.role == "" ||
-        register.name == "" ||
-        register.rollno == "" ||
-        register.email == "" ||
-        register.password == "",
-      register.confirmPassword == "")
-    ) {
+    if (register.name == "" || register.rollno == "" || register.email == "") {
       setError("Please fill all the fields");
       setLoading(false);
       return;
     }
 
-    if (register.password !== register.confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
-    }
+    // if (register.password !== register.confirmPassword) {
+    //   setError("Passwords do not match");
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
-      await axios.post("http://localhost:3000/auth/register", {
+      var resp = await axios.post("http://localhost:3000/auth/register", {
         email: register.email,
         password: register.password,
         rollno: Number(register.rollno),
         name: register.name,
       });
+      if (resp.status == 200) {
+        toast.info(
+          "User Registered Successfully, Password has been sent to your email"
+        );
+      }
       setError("");
       setLoading(false);
       redirect("/");
     } catch (err) {
-      setError(err.response.data.error);
+      setError(err.response);
       setLoading(false);
     }
   };
@@ -79,7 +78,7 @@ export default function Register() {
             <input
               className={css.input}
               type="number"
-              placeholder="* Enter your roll number"
+              placeholder="* Enter your ID number"
               value={register.rollno}
               onChange={(e) => {
                 setRegister({ ...register, rollno: e.target.value });
@@ -94,7 +93,7 @@ export default function Register() {
                 setRegister({ ...register, email: e.target.value });
               }}
             />
-            <input
+            {/* <input
               className={css.input}
               type="password"
               placeholder="* Enter your password"
@@ -111,7 +110,7 @@ export default function Register() {
               onChange={(e) => {
                 setRegister({ ...register, confirmPassword: e.target.value });
               }}
-            />
+            /> */}
             {error && <div className="errorHandling">{error}</div>}
             <div className={css.buttonDiv}>
               <button className={css.register} onClick={handleRegister}>

@@ -29,7 +29,10 @@ function App() {
   axios.interceptors.response.use(
     (response) => response, // Pass through successful responses
     (error) => {
-      if (error.response && error.response.status === 400) {
+      if (
+        error.response &&
+        (error.response.status === 400 || error.response.status === 401)
+      ) {
         toast.error(error.response.data);
       } else if (error.response && error.response.status === 422) {
         toast.error("Invalid or Wrong Question");
