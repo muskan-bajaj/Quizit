@@ -2,9 +2,9 @@ import { useNavigate } from "react-router-dom";
 
 import logo from "../assets/KIITLogo.svg";
 import back from "../assets/backArrow.svg";
-
 import css from "../css/QuestionNavigation.module.css";
-
+import MyTimer from "./Timer";
+import moment from "moment-timezone";
 export default function QuestionNavigation({
   data,
   visited,
@@ -14,12 +14,17 @@ export default function QuestionNavigation({
   submission = false,
 }) {
   const redirect = useNavigate();
+  var expiryTimestamp = moment(data.end);
+  var now = moment();
+  var duration = moment.duration(expiryTimestamp.diff(now));
+  console.log(duration.asSeconds());
   console.log(data);
   return (
     <div className={css.sidebar}>
       <div className={logo}>
         <img src={logo} />
       </div>
+      <MyTimer expiryTimestamp={expiryTimestamp} />
       {data &&
         Array.from(
           { length: submission ? data.length : data.questionBanks.length },
