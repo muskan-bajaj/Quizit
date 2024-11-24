@@ -95,7 +95,7 @@ export default function Result() {
                   <div className={css.sectionDetails}>
                     {undeclaredData.map((data, key) => {
                       return (
-                        <ResultCard key={key} data={data} declared={true} />
+                        <ResultCard key={key} data={data} declared={false} />
                       );
                     })}
                   </div>

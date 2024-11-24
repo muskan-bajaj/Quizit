@@ -113,7 +113,7 @@ export default function Assessment() {
                   {closedData.length > 0 &&
                     closedData.map((data, key) => {
                       return (
-                        <AssessmentCard key={key} data={data} closed={true} />
+                        <AssessmentCard key={key} data={data} closed={false} />
                       );
                     })}
                 </div>

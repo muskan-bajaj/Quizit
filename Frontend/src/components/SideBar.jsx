@@ -12,6 +12,7 @@ import logout from "../assets/logoutIcon.svg";
 import plusBlack from "../assets/plusBlack.svg";
 import settingsIcon from "../assets/settings.svg";
 import publishIcon from "../assets/publishIcon.svg";
+import backIcon from "../assets/backArrow.svg";
 
 import css from "../css/SideBar.module.css";
 import ConfirmPublish from "./modal/ConfirmPublish";
@@ -48,21 +49,6 @@ export default function SideBar({
       redirect("/assessment");
     }
   };
-  // const createTestHandler = async () => {
-  //   try {
-  //     const response = await axios.post("http://localhost:3000/test/create", {
-  //       setting: {
-  //         ...settingsData,
-  //         student_list: settingsData.student_list.split(","),
-  //         question_count: settingsData.totalQuestions,
-  //       },
-  //       questions: questionData,
-  //     });
-  //     console.log(response);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
 
   return (
     <>
@@ -109,6 +95,20 @@ export default function SideBar({
         >
           <img src={result} />
         </div>
+        {window.location.pathname.match(/^\/result\/(\d+)$/) ? (
+          <div
+            className={css.navItems}
+            id={css.hover}
+            onClick={() => {
+              redirect("/results");
+            }}
+          >
+            <img src={backIcon} />
+          </div>
+        ) : (
+          <></>
+        )}
+
         <div
           className={css.navItems}
           onClick={() => {

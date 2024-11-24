@@ -105,7 +105,7 @@ function App() {
           )}
           {isLoggedIn && authCtx.user.access == "Student" && (
             <Route
-              path="test/:id"
+              path="/test/:id"
               element={
                 <Suspense>
                   <ProctoredTest />
@@ -115,7 +115,7 @@ function App() {
           )}
           {isLoggedIn && authCtx.user.access == "Teacher" && (
             <Route
-              path="result/:id"
+              path="/result/:id"
               element={
                 <Suspense>
                   <ResultAnalysis />
@@ -125,7 +125,7 @@ function App() {
           )}
           {isLoggedIn && authCtx.user.access == "Student" && (
             <Route
-              path="submission/:id"
+              path="/submission/:id"
               element={
                 <Suspense>
                   <SubmissionAnalysis />
