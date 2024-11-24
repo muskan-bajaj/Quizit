@@ -6,6 +6,7 @@ function roundHalf(num: number) {
   return Math.max(Math.ceil(num * 2) / 2, 0);
 }
 export const getMarksFromAI = async (submission: { sid: number }) => {
+  if (!process.env.AI_BACKEND) return;
   try {
     var subObj = await db.query.submission.findFirst({
       where: eq(schema.submission.sid, submission.sid),
