@@ -10,9 +10,9 @@ export default function QuestionNavigation({
   visited,
   setVisited,
   type,
+  setExamStarted,
 }) {
   const redirect = useNavigate();
-  console.log(data);
   return (
     <div className={css.sidebar}>
       <div className={logo}>
@@ -55,6 +55,7 @@ export default function QuestionNavigation({
             if (type == "navigation") {
               redirect("/results");
             } else {
+              setExamStarted.exit();
               redirect("/assessment");
             }
           }}

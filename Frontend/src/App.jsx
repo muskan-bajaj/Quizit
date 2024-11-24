@@ -15,7 +15,7 @@ const Profile = React.lazy(() => import("./components/Profile"));
 const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
 const CreateTest = React.lazy(() => import("./components/CreateTest"));
-const Test = React.lazy(() => import("./components/Test"));
+const ProctoredTest = React.lazy(() => import("./components/ProctoredTest"));
 const ResultAnalysis = React.lazy(() => import("./components/ResultAnalysis"));
 const SubmissionAnalysis = React.lazy(() =>
   import("./components/SubmissionAnalysis")
@@ -107,7 +107,7 @@ function App() {
               path="test/:id"
               element={
                 <Suspense>
-                  <Test />
+                  <ProctoredTest />
                 </Suspense>
               }
             />

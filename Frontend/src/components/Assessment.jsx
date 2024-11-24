@@ -39,7 +39,7 @@ export default function Assessment() {
   useEffect(() => {
     getTestHandler();
   }, []);
-
+  console.log(authCtx.user.access);
   return (
     <div className="flexpage">
       <SideBar />

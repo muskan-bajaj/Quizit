@@ -67,7 +67,6 @@ export async function createTest(
   next: NextFunction
 ) {
   const rawData: types.QuizRequestBody = req.body;
-
   const student_list = rawData.setting.student_list;
   const student_list_db = await db
     .select({ uid: schema.user.uid, rollno: schema.user.rollno })
@@ -92,7 +91,7 @@ export async function createTest(
       )
     );
   }
-  if (rawData.questions.length < rawData.setting.question_count) {
+  if (rawData.questions.length !== rawData.setting.question_count) {
     next(
       new InvalidDataException(
         "Question count is less than the number of questions provided"
@@ -156,7 +155,7 @@ export async function createTest(
       })
       .filter((option) => option)
       .flat();
-
+    console.log(optionData);
     var options =
       optionData.length !== 0 &&
       (await trx
@@ -475,23 +474,23 @@ export async function submitQuestion(
         },
       });
   } else {
-    var [marksObtained, explanation] = getMarksFromAI(req.body);
-    await db
+    var sid = await db
       .insert(schema.submission)
       .values({
         qid: question.qid,
         tmid: testManager.tmid,
-        marksObtained: marksObtained as number,
         submittedAt: moment().format(),
         submittedAnswer: req.body.answer,
       })
       .onConflictDoUpdate({
         target: [schema.submission.qid, schema.submission.tmid],
         set: {
-          marksObtained: marksObtained as number,
           submittedAt: moment().format(),
         },
-      });
+      })
+      .returning({ sid: schema.submission.sid });
+
+    getMarksFromAI(sid[0]);
   }
   res.sendStatus(200);
 }
@@ -521,6 +520,7 @@ export async function getTestReport(
       marksObtained: true,
       submittedAt: true,
       submittedAnswer: true,
+      AiExplanation: true,
     },
     with: {
       questionBank: {
@@ -529,7 +529,6 @@ export async function getTestReport(
           answer: true,
           type: true,
           marksAwarded: true,
-          AiExplanation: true,
         },
         with: {
           options: true,
@@ -654,4 +653,13 @@ export async function getTestReportList(
   });
 
   res.json(groupIntoReports(testsRes));
+}
+
+export async function getSubject(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const subjects = await db.query.subject.findMany();
+  res.json(subjects);
 }

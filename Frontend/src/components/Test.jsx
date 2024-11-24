@@ -8,7 +8,7 @@ import SubmitModal from "./modal/SubmitModal";
 
 import css from "../css/Test.module.css";
 
-export default function Test() {
+export default function Test({ setExamStarted }) {
   const { id } = useParams();
   const [data, setData] = useState();
   const [visited, setVisited] = useState([true]);
@@ -49,7 +49,12 @@ export default function Test() {
   return (
     <>
       <div className="flexpage">
-        <QuestionNavigation data={data} visited={visited} type="view" />
+        <QuestionNavigation
+          data={data}
+          visited={visited}
+          type="view"
+          setExamStarted={setExamStarted}
+        />
         {data && data.questionBanks.length !== 0 ? (
           <div className={css.testScreen}>
             <div className={css.heading}>Question {visited.length}</div>
@@ -153,7 +158,7 @@ export default function Test() {
           setViewInstructionModal={setViewInstructionModal}
         />
       )}
-      {viewSubmitModal && <SubmitModal />}
+      {viewSubmitModal && <SubmitModal setExamStarted={setExamStarted} />}
     </>
   );
 }

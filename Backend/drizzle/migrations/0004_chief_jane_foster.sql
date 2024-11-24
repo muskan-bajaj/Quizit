@@ -1,0 +1,1 @@
+ALTER TABLE "submission" ALTER COLUMN "marks_obtained" SET DEFAULT 0;

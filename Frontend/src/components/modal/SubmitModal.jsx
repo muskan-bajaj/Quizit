@@ -4,7 +4,7 @@ import css from "../../css/SubmitModal.module.css";
 
 import success from "../../assets/successfulSubmission.gif";
 
-export default function SubmitModal() {
+export default function SubmitModal({ setExamStarted }) {
   const redirect = useNavigate();
   return (
     <div className={css.modal}>
@@ -16,6 +16,7 @@ export default function SubmitModal() {
         <div className={css.button}>
           <button
             onClick={() => {
+              setExamStarted.exit();
               redirect("/assessment");
             }}
           >

@@ -34,6 +34,7 @@ export default function SideBar({
   const [publish, setPublish] = useState(false);
 
   const submitTest = async () => {
+    console.log(settingsData);
     const response = await axios.post("http://localhost:3000/test/create", {
       setting: {
         ...settingsData,
@@ -47,21 +48,21 @@ export default function SideBar({
       redirect("/assessment");
     }
   };
-  const createTestHandler = async () => {
-    try {
-      const response = await axios.post("http://localhost:3000/test/create", {
-        setting: {
-          ...settingsData,
-          student_list: settingsData.student_list.split(","),
-          question_count: settingsData.totalQuestions,
-        },
-        questions: questionData,
-      });
-      console.log(response);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  // const createTestHandler = async () => {
+  //   try {
+  //     const response = await axios.post("http://localhost:3000/test/create", {
+  //       setting: {
+  //         ...settingsData,
+  //         student_list: settingsData.student_list.split(","),
+  //         question_count: settingsData.totalQuestions,
+  //       },
+  //       questions: questionData,
+  //     });
+  //     console.log(response);
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
 
   return (
     <>
