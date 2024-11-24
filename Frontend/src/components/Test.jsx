@@ -8,26 +8,12 @@ import SubmitModal from "./modal/SubmitModal";
 
 import css from "../css/Test.module.css";
 
-export default function Test({ setExamStarted }) {
-  const { id } = useParams();
-  const [data, setData] = useState();
+export default function Test({ setExamStarted, data, setData }) {
   const [visited, setVisited] = useState([true]);
   const [answer, setAnswer] = useState([]);
 
   const [viewInstructionModal, setViewInstructionModal] = useState(true);
   const [viewSubmitModal, setViewSubmitModal] = useState(false);
-
-  const getTestDetails = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/test/details?tid=${id}`
-      );
-      setData(response.data);
-      console.log(response.data);
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   const submitAnswerHandler = async (qid, answer) => {
     try {
@@ -41,10 +27,6 @@ export default function Test({ setExamStarted }) {
       console.log(e);
     }
   };
-
-  useEffect(() => {
-    getTestDetails();
-  }, []);
 
   return (
     <>
@@ -152,12 +134,12 @@ export default function Test({ setExamStarted }) {
           </span>
         )}
       </div>
-      {data && data.instructions && viewInstructionModal && (
+      {/* {data && data.instructions && viewInstructionModal && (
         <InstructionModal
           instructions={data.instructions}
           setViewInstructionModal={setViewInstructionModal}
         />
-      )}
+      )} */}
       {viewSubmitModal && <SubmitModal setExamStarted={setExamStarted} />}
     </>
   );
