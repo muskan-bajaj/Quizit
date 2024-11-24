@@ -16,8 +16,10 @@ const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
 const CreateTest = React.lazy(() => import("./components/CreateTest"));
 const ProctoredTest = React.lazy(() => import("./components/ProctoredTest"));
-const Test = React.lazy(() => import("./components/Test"));
 const ResultAnalysis = React.lazy(() => import("./components/ResultAnalysis"));
+const ResultAnalysisTest = React.lazy(() =>
+  import("./components/ResultAnalysisTest")
+);
 const SubmissionAnalysis = React.lazy(() =>
   import("./components/SubmissionAnalysis")
 );
@@ -105,7 +107,7 @@ function App() {
           )}
           {isLoggedIn && authCtx.user.access == "Student" && (
             <Route
-              path="test/:id"
+              path="/test/:id"
               element={
                 <Suspense>
                   <ProctoredTest />
@@ -115,7 +117,7 @@ function App() {
           )}
           {isLoggedIn && authCtx.user.access == "Teacher" && (
             <Route
-              path="result/:id"
+              path="/result/:id"
               element={
                 <Suspense>
                   <ResultAnalysis />
@@ -125,10 +127,20 @@ function App() {
           )}
           {isLoggedIn && authCtx.user.access == "Student" && (
             <Route
-              path="submission/:id"
+              path="/submission/:id"
               element={
                 <Suspense>
                   <SubmissionAnalysis />
+                </Suspense>
+              }
+            />
+          )}
+          {isLoggedIn && authCtx.user.access == "Teacher" && (
+            <Route
+              path="/submission/:tid/:uid"
+              element={
+                <Suspense>
+                  <ResultAnalysisTest />
                 </Suspense>
               }
             />

@@ -1,71 +1,58 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import SideBar from "./SideBar";
+
+import css from "../css/ResultAnalysis.module.css";
+import SubmissionCard from "./cards/SubmissionCard";
 import axios from "axios";
-
-import QuestionNavigation from "./QuestionNavigation";
-
-import css from "../css/SubmissionAnalysis.module.css";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Loading from "../Loading";
 
 export default function ResultAnalysis() {
   const { id } = useParams();
-  const [data, setData] = useState();
-  const [questionBank, setQuestionBank] = useState([]);
-  const [current, setCurrent] = useState(0);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const getTestDetails = async () => {
+  const getSubmissionDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/test/report?tid=${id}`
+        `http://localhost:3000/test/submission/list?tid=${id}`
       );
-      setData({ questionCount: response.data.submission.length });
-      setQuestionBank(response.data.submission);
-      // console.log(questionBank);
+      setData(response.data);
+      setLoading(false);
     } catch (e) {
       console.log(e);
     }
   };
 
   useEffect(() => {
-    getTestDetails();
+    getSubmissionDetails();
   }, []);
 
   return (
     <div className="flexpage">
-      <QuestionNavigation
-        data={data}
-        visited={current}
-        setVisited={setCurrent}
-        type="navigation"
-      />
-      <div className={css.submissionScreen}>
-        <div className={css.heading}>Question {current + 1}</div>
-        {questionBank[current] && (
-          <div className={css.inputs}>
-            <label htmlFor="question">Question</label>
-            <input
-              id="question"
-              type="text"
-              value={questionBank[current].question}
-              disabled
-            />
+      <SideBar />
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className={css.submissionScreen}>
+          <div className={css.heading}>Submissions</div>
+          <div className={css.view}>
+            <div className={css.headers}>
+              <div></div>
+              <div>Name</div>
+              <div>Roll No.</div>
+              <div>Violation Count</div>
+              <div>Submitted On</div>
+              <div>Marks Awarded</div>
+            </div>
+            {data.map((dataMap, index) => {
+              return (
+                <SubmissionCard key={index} index={index} data={dataMap} />
+              );
+            })}
           </div>
-        )}
-        {questionBank[current] && (
-          <div className={css.inputs}>
-            <label htmlFor="answer">Expected Answer</label>
-            <input
-              id="answer"
-              type="text"
-              value={
-                questionBank[current].type == "choice"
-                  ? questionBank[current].answer?.join(", ") || ""
-                  : questionBank[current].answer
-              }
-              disabled
-            />
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

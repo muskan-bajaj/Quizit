@@ -63,33 +63,34 @@ export default function Assessment() {
                 />
               </div>
             </div>
-            <div className={css.sectionDetails}>
-              {upcomingView ? (
-                upcomingData.length > 0 ? (
-                  upcomingData.map((data, key) => {
+            {upcomingView ? (
+              upcomingData.length > 0 ? (
+                <div className={css.sectionDetails}>
+                  {upcomingData.map((data, key) => {
                     return (
                       <AssessmentCard key={key} data={data} closed={false} />
                     );
-                  })
-                ) : (
-                  <>No results found!</>
-                )
-              ) : (
-                <></>
-              )}
-              {authCtx.user.access == "Teacher" ? (
-                <div
-                  className={css.addNew}
-                  onClick={() => {
-                    redirect("/createTest");
-                  }}
-                >
-                  <img src={plus} alt="" />
+                  })}
                 </div>
               ) : (
-                <></>
-              )}
-            </div>
+                <>
+                  {authCtx.user.access == "Teacher" ? (
+                    <div
+                      className={css.addNew}
+                      onClick={() => {
+                        redirect("/createTest");
+                      }}
+                    >
+                      <img src={plus} alt="" />
+                    </div>
+                  ) : (
+                    <>No results found!</>
+                  )}
+                </>
+              )
+            ) : (
+              <></>
+            )}
           </div>
           <div className={css.closed}>
             <div className={css.sectionHeading}>
@@ -112,7 +113,7 @@ export default function Assessment() {
                   {closedData.length > 0 &&
                     closedData.map((data, key) => {
                       return (
-                        <AssessmentCard key={key} data={data} closed={true} />
+                        <AssessmentCard key={key} data={data} closed={false} />
                       );
                     })}
                 </div>

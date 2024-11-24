@@ -8,19 +8,22 @@ import Loading from "../Loading";
 import css from "../css/SubmissionAnalysis.module.css";
 
 import aiIcon from "../assets/aiIcon.svg";
+import UpdateMarks from "./modal/UpdateMarks";
 
 export default function SubmissionAnalysis() {
-  const { id } = useParams();
+  const { tid, uid } = useParams();
   const [data, setData] = useState();
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(false);
 
   const getTestDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/test/report?tid=${id}`
+        `http://localhost:3000/test/submission?tid=${tid}&uid=${uid}`
       );
       setData(response.data.submission);
+      console.log(response);
       setLoading(false);
     } catch (e) {
       console.log(e);
@@ -29,6 +32,7 @@ export default function SubmissionAnalysis() {
   };
 
   useEffect(() => {
+    // console.log(tid);
     getTestDetails();
   }, []);
 
@@ -91,9 +95,12 @@ export default function SubmissionAnalysis() {
                   )}
                   <div className={css.nextButton}>
                     <button
-                      style={{ backgroundColor: "#13005A", display: "none" }}
+                      onClick={() => {
+                        setModal(true);
+                      }}
+                      style={{ backgroundColor: "#13005A" }}
                     >
-                      Recheck
+                      Edit Marks
                     </button>
                     <button
                       style={{ backgroundColor: "#393E46", fontWeight: "bold" }}
@@ -140,6 +147,13 @@ export default function SubmissionAnalysis() {
             </div>
           </div>
         </div>
+      )}
+      {modal && (
+        <UpdateMarks
+          setModal={setModal}
+          total={data[current].marksAwarded}
+          sid={data[current].sid}
+        />
       )}
     </>
   );
