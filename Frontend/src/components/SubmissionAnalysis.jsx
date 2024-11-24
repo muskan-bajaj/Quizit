@@ -32,10 +32,6 @@ export default function SubmissionAnalysis() {
     getTestDetails();
   }, []);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   return (
     <>
       {loading ? (

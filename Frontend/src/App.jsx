@@ -16,8 +16,10 @@ const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
 const CreateTest = React.lazy(() => import("./components/CreateTest"));
 const ProctoredTest = React.lazy(() => import("./components/ProctoredTest"));
-const Test = React.lazy(() => import("./components/Test"));
 const ResultAnalysis = React.lazy(() => import("./components/ResultAnalysis"));
+const ResultAnalysisTest = React.lazy(() =>
+  import("./components/ResultAnalysisTest")
+);
 const SubmissionAnalysis = React.lazy(() =>
   import("./components/SubmissionAnalysis")
 );
@@ -129,6 +131,16 @@ function App() {
               element={
                 <Suspense>
                   <SubmissionAnalysis />
+                </Suspense>
+              }
+            />
+          )}
+          {isLoggedIn && authCtx.user.access == "Teacher" && (
+            <Route
+              path="/submission/:tid/:uid"
+              element={
+                <Suspense>
+                  <ResultAnalysisTest />
                 </Suspense>
               }
             />
