@@ -74,7 +74,14 @@ export default function AssessmentCard({ data, closed }) {
             Test Closed
           </button>
         ) : (
-          <button style={{ backgroundColor: "#03C988" }}>Evaluate</button>
+          <button
+            style={{ backgroundColor: "#03C988" }}
+            onClick={() => {
+              redirect(`/result/${data.tid}`);
+            }}
+          >
+            Evaluate
+          </button>
         )}
       </div>
     </div>

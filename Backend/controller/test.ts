@@ -719,6 +719,7 @@ export async function getStudentListSubmission(
       violation: manager.violation,
       totalMarks,
       marksObtained,
+      published: manager.test.reportPublished,
       submittedAt: moment(lastSubmission)
         .tz("Asia/Kolkata")
         .format("DD-MM-YYYY hh:mm A"),

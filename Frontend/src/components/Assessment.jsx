@@ -71,9 +71,6 @@ export default function Assessment() {
                       <AssessmentCard key={key} data={data} closed={false} />
                     );
                   })}
-                </div>
-              ) : (
-                <>
                   {authCtx.user.access == "Teacher" ? (
                     <div
                       className={css.addNew}
@@ -84,9 +81,11 @@ export default function Assessment() {
                       <img src={plus} alt="" />
                     </div>
                   ) : (
-                    <>No results found!</>
+                    <></>
                   )}
-                </>
+                </div>
+              ) : (
+                <>No results found!</>
               )
             ) : (
               <></>
@@ -113,7 +112,7 @@ export default function Assessment() {
                   {closedData.length > 0 &&
                     closedData.map((data, key) => {
                       return (
-                        <AssessmentCard key={key} data={data} closed={false} />
+                        <AssessmentCard key={key} data={data} closed={true} />
                       );
                     })}
                 </div>

@@ -15,7 +15,7 @@ export default function CreateTest() {
     start_time: "",
     end_time: "",
     student_list: "",
-    instruction: "",
+    instructions: "",
     name: "",
     subject: "",
     semester: "",
