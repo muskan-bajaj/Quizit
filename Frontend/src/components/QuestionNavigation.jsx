@@ -11,43 +11,46 @@ export default function QuestionNavigation({
   setVisited,
   type,
   setExamStarted,
+  submission = false,
 }) {
   const redirect = useNavigate();
+  console.log(data);
   return (
     <div className={css.sidebar}>
       <div className={logo}>
         <img src={logo} />
       </div>
       {data &&
-        Array.from({ length: data.length }, (_, index) => index).map(
-          (_, index) => {
-            return (
-              <div
-                key={index}
-                className={css.navItems}
-                id={css.numbers}
-                style={
-                  type == "view"
-                    ? visited.length == index + 1
-                      ? { backgroundColor: "#ffffff" }
-                      : visited[index]
-                      ? { backgroundColor: "#03C988" }
-                      : { backgroundColor: "" }
-                    : visited == index
-                    ? { backgroundColor: "#ffffff", cursor: "pointer" }
-                    : { backgroundColor: "#4b515b", cursor: "pointer" }
+        Array.from(
+          { length: submission ? data.length : data.questionBanks.length },
+          (_, index) => index
+        ).map((_, index) => {
+          return (
+            <div
+              key={index}
+              className={css.navItems}
+              id={css.numbers}
+              style={
+                type == "view"
+                  ? visited.length == index + 1
+                    ? { backgroundColor: "#ffffff" }
+                    : visited[index]
+                    ? { backgroundColor: "#03C988" }
+                    : { backgroundColor: "" }
+                  : visited == index
+                  ? { backgroundColor: "#ffffff", cursor: "pointer" }
+                  : { backgroundColor: "#4b515b", cursor: "pointer" }
+              }
+              onClick={() => {
+                if (type == "navigation") {
+                  setVisited(index);
                 }
-                onClick={() => {
-                  if (type == "navigation") {
-                    setVisited(index);
-                  }
-                }}
-              >
-                {index + 1}
-              </div>
-            );
-          }
-        )}
+              }}
+            >
+              {index + 1}
+            </div>
+          );
+        })}
       <div className={css.navItems}>
         <img
           src={back}

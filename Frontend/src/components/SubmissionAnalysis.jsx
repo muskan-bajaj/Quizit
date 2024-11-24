@@ -47,6 +47,7 @@ export default function SubmissionAnalysis() {
             visited={current}
             setVisited={setCurrent}
             type="navigation"
+            submission={true}
           />
           <div className={css.submissionScreen}>
             <div className={css.heading}>Question {current + 1}</div>

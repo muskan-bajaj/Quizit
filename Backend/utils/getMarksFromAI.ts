@@ -32,7 +32,8 @@ export const getMarksFromAI = async (submission: { sid: number }) => {
     if (analysis.final_score >= 0.8) {
       marks = 1;
     } else if (analysis.final_score > 0.45) {
-      marks = analysis.final_score / 0.35;
+      console.log(analysis.final_score);
+      marks = (analysis.final_score - 0.45) / 0.35;
     }
     await db
       .update(schema.submission)

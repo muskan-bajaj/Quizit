@@ -47,4 +47,27 @@ router.get(
   controller.test.getSubject
 );
 
+router.get(
+  "/submission/list",
+  middleware.check.has_role(["Teacher"]),
+  controller.test.getStudentListSubmission
+);
+
+router.get(
+  "/submission",
+  middleware.check.has_role(["Teacher"]),
+  controller.test.getStudentSubmission
+);
+
+router.post(
+  "/submission/edit",
+  middleware.check.has_role(["Teacher"]),
+  controller.test.editStudentSubmission
+);
+
+router.get(
+  "/publish",
+  middleware.check.has_role(["Teacher"]),
+  controller.test.publishTest
+);
 export default router;

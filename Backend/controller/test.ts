@@ -22,14 +22,14 @@ function roundHalf(num: number) {
 }
 
 function groupIntoOpenClosed(tests: any[]) {
-  const today = moment(); // Get today's date
+  const today = moment().tz("Asia/Kolkata"); // Get today's date
 
   return tests.reduce<{
     closed: typeof tests;
     open: typeof tests;
   }>(
     (acc, item) => {
-      const endDate = moment(item.end);
+      const endDate = moment(item.end).tz("Asia/Kolkata");
       if (endDate < today) {
         acc.closed.push(item); // Add to "past" group
       } else {
@@ -662,4 +662,165 @@ export async function getSubject(
 ) {
   const subjects = await db.query.subject.findMany();
   res.json(subjects);
+}
+
+export async function getStudentListSubmission(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const testManager = await db.query.testManager.findMany({
+    where: eq(schema.testManager.tid, Number(req.query.tid)),
+    with: {
+      test: true,
+      user: true,
+      submissions: true,
+    },
+  });
+
+  if (!testManager) {
+    return next(new InvalidDataException("Test not found"));
+  }
+
+  var data = testManager.filter((test) => test.submissions.length !== 0);
+  var processedData = data.map((manager) => {
+    return {
+      uid: manager.user.uid,
+      tid: manager.test.tid,
+      tmid: manager.tmid,
+      name: manager.user.name,
+      maxViolation: manager.test.violationCount,
+      violation: manager.violation,
+    };
+  });
+  res.json(processedData);
+}
+
+export async function getStudentSubmission(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const testManager = await db.query.testManager.findFirst({
+    where: and(
+      eq(schema.testManager.uid, Number(req.query.uid)),
+      eq(schema.testManager.tid, Number(req.query.tid))
+    ),
+    with: {
+      test: true,
+    },
+  });
+
+  if (!testManager) {
+    return next(new InvalidDataException("Test not found"));
+  }
+
+  const submissions = await db.query.submission.findMany({
+    where: eq(schema.submission.tmid, testManager.tmid),
+    columns: {
+      sid: true,
+      marksObtained: true,
+      submittedAt: true,
+      submittedAnswer: true,
+      AiExplanation: true,
+    },
+    with: {
+      questionBank: {
+        columns: {
+          question: true,
+          answer: true,
+          type: true,
+          marksAwarded: true,
+        },
+        with: {
+          options: true,
+        },
+      },
+    },
+  });
+
+  //process data
+  const report = submissions.map((submission) => {
+    return {
+      ...submission,
+      ...submission.questionBank,
+      questionBank: undefined,
+    };
+  });
+
+  const totalMarks = report.reduce((acc, item) => {
+    return acc + item.marksAwarded;
+  }, 0);
+
+  const totalMarksObtained = report.reduce((acc, item) => {
+    return acc + (item.marksObtained ?? 0);
+  }, 0);
+
+  var processedRep = report.map((item) => {
+    var options = item.options.map((option) => {
+      return option.option;
+    });
+    var correctAns = item.options
+      .map((option) => {
+        if (option.correct) {
+          return option.option;
+        }
+      })
+      .filter((option) => option);
+    return { ...item, options: options, answer: correctAns };
+  });
+  res.json({
+    test: { totalMarksObtained, totalMarks, ...testManager.test },
+    submission: [...processedRep],
+  });
+}
+
+export async function editStudentSubmission(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const submission = await db.query.submission.findFirst({
+    where: eq(schema.submission.sid, Number(req.body.sid)),
+  });
+
+  if (!submission) {
+    return next(new InvalidDataException("Submission not found"));
+  }
+
+  const updated = await db
+    .update(schema.submission)
+    .set({
+      marksObtained: req.body.newMarks,
+    })
+    .where(eq(schema.submission.sid, Number(req.body.sid)));
+
+  res.sendStatus(200);
+}
+
+export async function publishTest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const test = await db.query.test.findFirst({
+    where: eq(schema.test.tid, Number(req.query.tid)),
+  });
+
+  if (!test) {
+    return next(new InvalidDataException("Test not found"));
+  }
+
+  if (test.reportPublished) {
+    return next(new DataAleadryExistsException("Test already published"));
+  }
+
+  var updated = await db
+    .update(schema.test)
+    .set({
+      reportPublished: true,
+    })
+    .where(eq(schema.test.tid, Number(req.query.tid)));
+
+  res.sendStatus(200);
 }

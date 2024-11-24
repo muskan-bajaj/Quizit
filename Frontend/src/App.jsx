@@ -16,6 +16,7 @@ const Assessment = React.lazy(() => import("./components/Assessment"));
 const Result = React.lazy(() => import("./components/Result"));
 const CreateTest = React.lazy(() => import("./components/CreateTest"));
 const ProctoredTest = React.lazy(() => import("./components/ProctoredTest"));
+const Test = React.lazy(() => import("./components/Test"));
 const ResultAnalysis = React.lazy(() => import("./components/ResultAnalysis"));
 const SubmissionAnalysis = React.lazy(() =>
   import("./components/SubmissionAnalysis")
