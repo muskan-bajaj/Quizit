@@ -7,16 +7,16 @@ export default function SubmissionCard({ index, data }) {
     <div className={css.submissionCard}>
       <div>{index + 1}.</div>
       <div>{data.name}</div>
-      <div>21051228</div>
+      <div>{data.rollno}</div>
       <div>{data.violation}</div>
-      <div>27-09-10 12:00 PM</div>
+      <div>{data.submittedAt}</div>
       <div
         className={css.marks}
         onClick={() => {
           redirect(`/submission/${data.tid}/${data.uid}`);
         }}
       >
-        6/10
+        {data.marksObtained}/{data.totalMarks}
       </div>
     </div>
   );

@@ -67,7 +67,7 @@ export default function SubmissionAnalysis() {
                   {data[current].type == "long" ? (
                     <div className={css.long}>
                       <textarea
-                        value={data[current].answer}
+                        value={data[current].submittedAnswer}
                         disabled
                         rows={15}
                       />

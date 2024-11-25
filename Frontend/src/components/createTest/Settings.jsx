@@ -159,7 +159,7 @@ export default function Settings({ data, setData }) {
         <textarea
           rows={10}
           placeholder="Enter Instruction"
-          value={data.instruction}
+          value={data.instructions}
           onChange={(e) => {
             setData({ ...data, instructions: e.target.value });
           }}

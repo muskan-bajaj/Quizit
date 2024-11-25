@@ -2,7 +2,17 @@ import { Request, Response, NextFunction } from "express";
 import * as types from "./interface/test";
 import * as schema from "../drizzle/schema";
 import { getDbInstance } from "../drizzle/db";
-import { inArray, and, eq, sql, lt, notExists, or, SQL } from "drizzle-orm";
+import {
+  inArray,
+  and,
+  eq,
+  sql,
+  lt,
+  notExists,
+  or,
+  SQL,
+  asc,
+} from "drizzle-orm";
 import { report } from "process";
 import moment from "moment";
 import { CustomLogger } from "../logger";
@@ -672,9 +682,15 @@ export async function getStudentListSubmission(
   const testManager = await db.query.testManager.findMany({
     where: eq(schema.testManager.tid, Number(req.query.tid)),
     with: {
-      test: true,
+      test: {
+        with: {
+          questionBanks: true,
+        },
+      },
       user: true,
-      submissions: true,
+      submissions: {
+        orderBy: [asc(schema.submission.submittedAt)],
+      },
     },
   });
 
@@ -684,13 +700,29 @@ export async function getStudentListSubmission(
 
   var data = testManager.filter((test) => test.submissions.length !== 0);
   var processedData = data.map((manager) => {
+    var totalMarks = manager.test.questionBanks.reduce((acc, item) => {
+      return acc + item.marksAwarded;
+    }, 0);
+    var lastSubmission;
+    var marksObtained = manager.submissions.reduce((acc, item) => {
+      lastSubmission = item.submittedAt;
+      return acc + (item.marksObtained ?? 0);
+    }, 0);
+
     return {
       uid: manager.user.uid,
       tid: manager.test.tid,
       tmid: manager.tmid,
       name: manager.user.name,
+      rollno: manager.user.rollno,
       maxViolation: manager.test.violationCount,
       violation: manager.violation,
+      totalMarks,
+      marksObtained,
+      published: manager.test.reportPublished,
+      submittedAt: moment(lastSubmission)
+        .tz("Asia/Kolkata")
+        .format("DD-MM-YYYY hh:mm A"),
     };
   });
   res.json(processedData);

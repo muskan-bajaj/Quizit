@@ -59,9 +59,7 @@ export class Mailer {
   }
 
   sendToRoll(roll: number[], subject: string, text: string) {
-    const rollMail = roll.map(
-      (r) => `${process.env.EMAIL_PREFIX}${r}@${process.env.EMAIL_DOMAIN}`
-    );
+    const rollMail = roll.map((r) => `${r}@${process.env.EMAIL_DOMAIN}`);
     const fromMail = process.env.EMAIL;
     const username_fromMail = fromMail?.split("@")[0];
     const domain_fromMail = fromMail?.split("@")[1];

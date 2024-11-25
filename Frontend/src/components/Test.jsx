@@ -9,6 +9,7 @@ import SubmitModal from "./modal/SubmitModal";
 import css from "../css/Test.module.css";
 
 export default function Test({ setExamStarted, data, setData }) {
+  const { id } = useParams();
   const [visited, setVisited] = useState([true]);
   const [answer, setAnswer] = useState([]);
 
@@ -102,11 +103,11 @@ export default function Test({ setExamStarted, data, setData }) {
                 {data && visited.length == data.questionBanks.length ? (
                   <button
                     onClick={() => {
-                      setViewSubmitModal(true);
                       submitAnswerHandler(
                         data.questionBanks[visited.length - 1].qid,
                         answer
                       );
+                      setViewSubmitModal(true);
                     }}
                   >
                     Submit Test
