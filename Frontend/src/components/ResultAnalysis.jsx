@@ -49,7 +49,7 @@ export default function ResultAnalysis() {
       <SideBar />
       {loading ? (
         <Loading />
-      ) : (
+      ) : data.length != 0 ? (
         <div className={css.submissionScreen}>
           <div
             style={{
@@ -85,6 +85,8 @@ export default function ResultAnalysis() {
             })}
           </div>
         </div>
+      ) : (
+        <>No Submissions Found</>
       )}
     </div>
   );

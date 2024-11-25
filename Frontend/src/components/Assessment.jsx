@@ -85,7 +85,21 @@ export default function Assessment() {
                   )}
                 </div>
               ) : (
-                <>No results found!</>
+                <>
+                  {" "}
+                  {authCtx.user.access == "Teacher" ? (
+                    <div
+                      className={css.addNew}
+                      onClick={() => {
+                        redirect("/createTest");
+                      }}
+                    >
+                      <img src={plus} alt="" />
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </>
               )
             ) : (
               <></>
